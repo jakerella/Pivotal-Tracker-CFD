@@ -1,0 +1,19 @@
+!!!5
+html
+  head
+    meta(charset="utf-8")
+    title #{title} - PTFlow
+    block styles
+        link(href="/style/base.css", rel="stylesheet", type="text/css")
+    block scripts
+        script(src="/script/lib/jquery-1.9.1.min.js")
+  body
+    
+    header #{title}
+    
+    #wrapper
+        block content
+
+    footer
+        p
+            | PTFlow library is &copy; 2013 Jordan Kasper, under an <a href="https://github.com/jakerella/pt-flow/blob/master/LICENSE">MIT license</a>
