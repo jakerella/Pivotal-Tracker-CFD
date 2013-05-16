@@ -28,7 +28,7 @@ heroku config:set MONGO_DB_URL=[protocol][username:password@]{host name}[:port]{
 git push heroku [local branch:]master
 ```
 
-You can get your API token at the bottom of your [Pivotal Tracker profile]([Pivotal Tracker API token](https://www.pivotaltracker.com/profile)) page. All of your `console.log()` statements will appear in the Heroku logs which you can view by running `heroku logs`. You may also want to review this guide to [Node.js on Heroku](https://devcenter.heroku.com/articles/nodejs).
+You can get your API token at the bottom of your [Pivotal Tracker profile](https://www.pivotaltracker.com/profile) page. All of your `console.log()` statements will appear in the Heroku logs which you can view by running `heroku logs`. You may also want to review this guide to [Node.js on Heroku](https://devcenter.heroku.com/articles/nodejs).
 
 #### Using a local Heroku MongoDB instance
 
