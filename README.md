@@ -1,10 +1,18 @@
-pt-flow
+Pivotal Tracker CFD
 =======
 
 A cumulative flow diagram statistics gatherer (and charter) for users of Pivotal Tracker.
 
+This is a small Node.js/Express/MongoDB app that you publish live somewhere which gathers statistics from Pivotal Tracker using their [activity web hook](https://www.pivotaltracker.com/help/integrations#activity_web_hook) and includes a slim UI for viewing the resulting cumulative flow diagram. It includes basic authentication using PT API tokens and will (soon) include some customizations and aggregated statistics for the chart.
 
 ## Server Installation
+
+### Database (MongoDB)
+
+You will need a MongoDB instance running somewhere (see the `MONGO_DB_URL` env variable below). You can get a small amount of free space on [MongoLab](https://mongolab.com). Combining that with a single free Heroku web dyno you can easily run this app live without any set up costs. Of course, scaling it is a different story. An example of the database connection URI:
+```
+mongodb://someuser:theirpass@abcd1234.mongolab.com/my-pt-stats
+```
 
 ### Heroku Install
 
@@ -14,9 +22,9 @@ Assuming you have a verified [Heroku account](http://www.heroku.com/) and the [H
 git clone git@github.com:jakerella/pt-flow.git
 cd pt-flow
 heroku apps:create [optional app name]
-heroku config:set NODE_ENV=[env name, e.g. "dev" or "production"]
+heroku config:set NODE_ENV=[env name, e.g. "dev" or "production" (defaults to "production", use "dev" to enable expanded error reporting and the testing page for web hooks)]
 heroku config:set PT_TOKEN=[Pivotal Tracker API token]
-heroku config:set MONGO_DB_URL=[e.g. "username:password@domain.com/mydb"]
+heroku config:set MONGO_DB_URL=[protocol][username:password@]{host name}[:port]{/database}
 git push heroku [local branch:]master
 ```
 
@@ -29,3 +37,12 @@ You can use MongoDB from any server (see the options for setting up your mongo c
 heroku addons:add mongolab
 ```
 
+## Usage
+
+TODO
+
+
+## Authors
+
+* Jordan Kasper (@jakerella)
+* Ryan Neimeyer (@rneimeyer)
