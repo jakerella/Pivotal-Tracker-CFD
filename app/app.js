@@ -1,5 +1,6 @@
 console.log("Starting pt-flow server");
 
+require("./modules/helpers.js"); // no return
 var     express = require("express"),
            http = require("http"),
       xmlParser = require("./modules/xml-parser.js"),
@@ -43,50 +44,10 @@ if (!process.env["PT_TOKEN"] || !process.env["PT_TOKEN"].length) {
 }
 
 // Mongo DB connection info
-if (process.env["MONGO_DB_URL"]) {
-    var mongoInfo = mongo.parseConnectionURI(process.env["MONGO_DB_URL"]);
-    if (mongoInfo) {
-        app.set("mongoInfo", mongoInfo);
-    } else {
-        throw Error("An invalid MongoDB connection URL was provided, it should follow the format: [protocol][username:password@]host[:port]/database");
-    }
-
-} else {
-    throw Error("No MongoDB connection URL is set in the env var: \"MONGO_DB_URL\". Please set it!");
+var mongoInfo = mongo.parseConnectionURI(process.env["MONGO_DB_URL"]);
+if (!mongoInfo) {
+    throw Error("Either no MongoDB connection URL was provided or it was invalid. Please place one in an environment variable (\"MONGO_DB_URL\") with the format: [protocol][username:password@]host[:port]/database");
 }
-
-
-// object helpers
-Object.defineProperty(
-    Object.prototype, 
-    'isFunction',
-    {
-        writable : false,
-        enumerable : false, 
-        configurable : false,
-        value : function () {
-            return {}.toString.call(this) === "[object Function]";
-        }
-    }
-);
-// object key iterator (operates just like Array.forEach)
-Object.defineProperty(
-    Object.prototype, 
-    'each',
-    {
-        writable : false,
-        enumerable : false, 
-        configurable : false,
-        value : function (f, ignoreFunctions) {
-            var obj = this;
-            ignoreFunctions = !!ignoreFunctions;
-            Object.keys(obj).forEach( function(key) { 
-                if (ignoreFunctions && obj[key].isFunction()) { return; }
-                f( obj[key], key );
-            });
-        }
-    }
-);
 
 
 // GETs
