@@ -1,0 +1,29 @@
+
+
+header { text-align: center; font-weight: bold; font-size: 1.2em; }
+
+.loading { display: none; }
+
+#messages {
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    background-color: #000;
+    background-color: rgba(255,255,255,0.75);
+    font-weight: bold;
+}
+.message { display: none; }
+.info { color: #339; }
+.success { color: #393; }
+.error { color: #933; }
+
+footer { margin-top: 2em; text-align: right; font-size: 0.9em; color: #666; }
+
+.page_login { padding: 3em 1em 0 1em; }
+.page_login .intro { text-align: center; max-width: 40em; margin: 1em auto; }
+form#login { text-align: center; }
+.page_login .loading { margin-left: 10px; vertical-align: middle; }
+.page_login footer { text-align: center; }

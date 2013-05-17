@@ -32,7 +32,6 @@ app.configure(function () {
 app.configure("dev", function () {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
-
 app.configure("production", function () {
     app.use(express.errorHandler());
 });
@@ -90,11 +89,12 @@ Object.defineProperty(
 );
 
 
-// Gets
+// GETs
 app.get("/", routes.index);
 //app.get("/stats/:id", routes.hasToken, routes.getStatsForProject);
 
-// Posts
+// POSTs
+app.post("/projects", routes.getProjects);
 //app.post("/activity-hook", routes.hasToken, routes.activityHook);
 
 

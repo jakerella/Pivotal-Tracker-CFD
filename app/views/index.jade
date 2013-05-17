@@ -5,7 +5,19 @@ block scripts
     script(src="/script/lib/jquery.cookie.js")
     script(src="/script/client.js")
 
+block pageScript
+    script
+        PTCFD.checkForCookie();
+        PTCFD.initLoginForm("#login");
+
 block content
-    p You will need to enter a valid Pivotal Tracker API token to use this module.
-    form
-        input 
+    p.intro 
+        | You will need to enter a valid Pivotal Tracker API token to use 
+        | this site. You can find yours at the bottom of your 
+        | <a href="https://www.pivotaltracker.com/profile">Pivotal Tracker profile</a> 
+        | page.
+
+    form#login(action="", method="POST")
+        input#pivotalToken(type="text", placeholder="pivotal tracker token")
+        input#doLogin(type="submit", value="Login")
+        img(src="/images/ajax-loader.gif", alt="Working...", class="loading")
