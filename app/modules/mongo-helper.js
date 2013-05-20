@@ -6,6 +6,11 @@ var           e = require("./errors.js"),
              Db = mongo.Db,
     connectInfo = null;
 
+// constants
+var CONNECT_TIMEOUT  = 2000; // for multiple simultaneous connections
+    CONNECT_INTERVAL = 100;  // for multiple simultaneous connections
+
+
 /**
  * Parses a connection URI, including username/password, port, and protocol.
  * NOTE: this must be called before trying to connect to the Mongo server!
@@ -30,6 +35,37 @@ exports.parseConnectionURI = function (uri) {
 
     return connectInfo;
 };
+
+
+/**
+ * Opens a connection to the Mongo server (and database). If one is already 
+ * open within the scope provided, then it is returned. Simultaneous calls 
+ * to this method with the same scope will work by waiting for the first 
+ * request to complete.
+ * 
+ * @param  {object}   scope      The scope for the db connection (most likely the http request)
+ * @param  {Function} cb         A callback for when the database is ready: function(err, db) { ... }
+ */
+exports.connect = function (scope, cb, _startTime) {
+    _startTime = (_startTime || (new Date()).getTime());
+    if (scope && scope.isFunction()) { cb = scope; scope = null; }
+
+    if (((new Date()).getTime() - _startTime) > CONNECT_TIMEOUT) {
+        cb(new e.DatabaseError("Timeout while trying to connect to MongoDB server"));
+        return;
+    }
+
+    if (scope.mongoStartup) {
+        setTimeout(function() {
+            exports.connect(scope, cb, _startTime);
+        }, CONNECT_INTERVAL);
+    } else {
+        doConnect(scope, (cb || function() {}));
+    }
+};
+
+
+// -------------- Private Module Functions --------------- //
 
 // internal use only
 var doConnect = function(scope, cb) {
@@ -102,36 +138,4 @@ var doConnect = function(scope, cb) {
             return;
         }
     });
-};
-
-var CONNECT_TIMEOUT  = 2000; // for multiple simultaneous connections
-var CONNECT_INTERVAL = 100;  // for multiple simultaneous connections
-
-
-/**
- * Opens a connection to the Mongo server (and database). If one is already 
- * open within the scope provided, then it is returned. Simultaneous calls 
- * to this method with the same scope will work by waiting for the first 
- * request to complete.
- * 
- * @param  {object}   scope      The scope for the db connection (most likely the http request)
- * @param  {Function} cb         A callback for when the database is ready: function(err, db) { ... }
- * @return {mongo.Db}            Returns the Mongo Db object, ready to use
- */
-exports.connect = function (scope, cb, _startTime) {
-    _startTime = (_startTime || (new Date()).getTime());
-    if (scope && scope.isFunction()) { cb = scope; scope = null; }
-
-    if (((new Date()).getTime() - _startTime) > CONNECT_TIMEOUT) {
-        cb(new e.DatabaseError("Timeout while trying to connect to MongoDB server"));
-        return;
-    }
-
-    if (scope.mongoStartup) {
-        setTimeout(function() {
-            exports.connect(scope, cb, _startTime);
-        }, CONNECT_INTERVAL);
-    } else {
-        doConnect(scope, (cb || function() {}));
-    }
 };
