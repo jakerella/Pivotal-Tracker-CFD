@@ -6,14 +6,6 @@
     var app = window.PTCFD = (window.PTCFD || {});
     app.cookie = "ptcfd_token";
 
-    app.checkForCookie = function() {
-        var t = $.cookie(app.cookie);
-        console.log("token:", t);
-        if (t && t.length) {
-            app.redirectToProjects();
-        }
-    };
-
     app.redirectToProjects = function() {
         window.location.replace("/projects");
     };
@@ -33,7 +25,7 @@
                         setTimeout(function() {
                             console.log("Redirecting to project listing page");
                             ld.hide();
-                            // app.redirectToProjects();
+                            app.redirectToProjects();
                         }, 2000);
 
                     } else {
