@@ -1,6 +1,8 @@
 
 (function($) {
 
+    window.console = (window.console || { log: function() {}, error: function() {}});
+
     var app = window.PTCFD = (window.PTCFD || {});
     app.cookie = "ptcfd_token";
 
@@ -23,20 +25,22 @@
             app.clearMessages(function() {
 
                 app.getProjects($("input:text").val(), function(result) {
-                    if (result.isValidToken === true) {
+                    if (result.projects && result.projects.length) {
                         
-                        //$.cookie(app.cookie, t, { expires: 365 });
+                        $.cookie(app.cookie, result.token, { expires: 365 });
                         
                         app.success("Thanks! You'll be redirected in just a sec...");
                         setTimeout(function() {
-                            app.redirectToProjects();
+                            console.log("Redirecting to project listing page");
+                            ld.hide();
+                            // app.redirectToProjects();
                         }, 2000);
 
                     } else {
+                        ld.hide();
                         app.error("Sorry, but that is not a valid token for this system!");
                     }
                 });
-                ld.hide();
 
             });
             return false;
@@ -44,14 +48,6 @@
     };
 
     app.getProjects = function(t, cb) {
-        if (app.projects) {
-            cb({
-                isValidToken: null,
-                projects: app.projects
-            });
-            return;
-        }
-
         $.ajax({
             url: "/projects",
             data: { token: t },
@@ -59,11 +55,8 @@
             dataType: "json",
             success: function(d) {
                 console.log("Projects received: ", d);
-                if (d.projects) {
-                    app.projects = d.projects;
-                }
                 cb({
-                    isValidToken: d.isValidToken,
+                    token: d.token,
                     projects: d.projects
                 });
             },
