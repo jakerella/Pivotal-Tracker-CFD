@@ -52,13 +52,15 @@ if (!mongoInfo) {
 
 // GETs
 app.get("/", routes.index);
+app.get("/projects", routes.hasToken, routes.listProjects);
 //app.get("/stats/:id", routes.hasToken, routes.getStatsForProject);
 
 // POSTs
+app.post("/", routes.index);
 app.post("/projects", routes.getProjects);
 //app.post("/activity-hook", routes.hasToken, routes.activityHook);
 
 
 http.createServer(app).listen(app.get("port"), function () {
-  console.log("pt-flow server listening on port " + app.get("port"));
+  console.log("pt-cfd server listening on port " + app.get("port"));
 });
