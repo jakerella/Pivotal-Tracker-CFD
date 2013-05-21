@@ -53,7 +53,8 @@ if (!mongoInfo) {
 // GETs
 app.get("/", routes.index);
 app.get("/projects", routes.hasToken, routes.listProjects);
-//app.get("/stats/:id", routes.hasToken, routes.getStatsForProject);
+app.get("/project/:id", routes.hasToken, routes.viewProject);
+// app.get("/stats/:id", routes.hasToken, routes.getStatsForProject);
 
 // POSTs
 app.post("/", routes.index);

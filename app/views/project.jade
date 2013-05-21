@@ -1,0 +1,22 @@
+extend layout
+
+block scripts
+    script(src="/script/lib/jquery-1.9.1.min.js")
+    script(src="/script/lib/flot/jquery.flot.min.js")
+    script(src="/script/lib/flot/jquery.flot.time.min.js")
+    script(src="/script/lib/flot/jquery.flot.stack.min.js")
+    script(src="/script/client.js")
+
+block pageScript
+    != "<script>"
+    != "PTCFD.stats = " + stats + ";"
+    != "</script>"
+
+    script
+        PTCFD.showChart({ node: "#chart" });
+        
+
+block content
+    p.projectLink
+        | <a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View this project on Pivotal tracker</a>
+    div#chart

@@ -6,9 +6,11 @@
     var app = window.PTCFD = (window.PTCFD || {});
     app.cookie = "ptcfd_token";
 
+
     app.redirectToProjects = function() {
         window.location.replace("/projects");
     };
+
 
     app.initLoginForm = function(form) {
         $(form).submit(function(e) {
@@ -39,6 +41,7 @@
         });
     };
 
+
     app.getProjects = function(t, cb) {
         $.ajax({
             url: "/projects",
@@ -59,6 +62,69 @@
                     cb("Sorry, but there was an error on the server. Please try again or contact the administrator.");
                 } else {
                     cb(e.error.message);
+                }
+            }
+        });
+    };
+
+
+    app.showChart = function(options) {
+        var i, j, l, m, t,
+            seriesData = {},
+             chartData = [];
+
+        options = (options || {});
+        options.node = $(options.node);
+        options.data = (options.data || app.stats);
+        options.series = (options.series || ["Accepted", "Finished", "Started", "Unstarted"]);
+
+        if (!options.node.length || !options.data) {
+            app.error("Sorry, but it looks like there's no data to display!");
+            return;
+        }
+
+        // set up chart data series holders
+        for (i=0, l=options.series.length; i<l; ++i) {
+            chartData.push({
+                label: options.series[i],
+                data: []
+            });
+            seriesData[options.series[i]] = [];
+        }
+
+        // stuff all stats data into chart data series holders
+        for (i=0, l=options.data.length; i<l; ++i) {
+            // get timestamp from date entry
+            t = (new Date(options.data[i].date)).getTime();
+
+            // add data from each entry to series
+            for (j=0, m=options.series.length; j<m; ++j) {
+                seriesData[options.series[j]].push([t, (options.data[i][options.series[j].toLowerCase()] || 0)]);
+            }
+        }
+
+        // prepare the final chart data object
+        for (i=0, l=options.series.length; i<l; ++i) {
+            chartData[i].data = seriesData[options.series[i]];
+        }
+
+        console.log("Plotting chart with:", chartData);
+        $.plot(options.node, chartData, {
+            legend: {
+                position: "nw",
+                backgroundOpacity: 0
+            },
+            xaxis: {
+                mode: "time",
+                minTickSize: [1, "day"],
+                timeformat: "%Y-%m-%d"
+            },
+            series: {
+                stack: true,
+                lines: {
+                    show: true,
+                    fill: true,
+                    steps: false
                 }
             }
         });

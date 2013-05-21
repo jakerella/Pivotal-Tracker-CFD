@@ -5,10 +5,6 @@ block scripts
     script(src="/script/lib/jquery.cookie.js")
     script(src="/script/client.js")
 
-block pageScript
-   script
-        console.log(window);    
-
 block content
     p.intro 
         | These are all of the projects you can access in this system:
@@ -16,5 +12,5 @@ block content
     ul
         - each project in projects
             li 
-                | <a href="/stats/#{project.id}">#{project.name}</a> (<a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View on PT</a>)
+                | <a href="/project/#{project.id}">#{project.name}</a> (<a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View on PT</a>)
     

@@ -27,3 +27,10 @@ footer { margin-top: 2em; text-align: right; font-size: 0.9em; color: #666; }
 form#login { text-align: center; }
 .page_login .loading { margin-left: 10px; vertical-align: middle; }
 .page_login footer { text-align: center; }
+
+.projectLink {
+    font-size: 0.9em;
+    text-align: center;
+    margin: 0;
+}
+#chart { width: 700px; height: 500px; }
