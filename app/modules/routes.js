@@ -1,6 +1,6 @@
 
 var     e = require("./errors.js"),
-    mongo = require("./mongo-helper.js");
+     data = require("./data-helper.js");
 
 var PIVOTAL_TOKEN_COOKIE = "ptcfd_token";
 
@@ -18,7 +18,7 @@ exports.hasToken = function (req, res, next) {
 };
 
 exports.index = function(req, res, next) {
-    if (req.cookies[PIVOTAL_TOKEN_COOKIE] && req.session.projects) {
+    if (req.cookies[PIVOTAL_TOKEN_COOKIE]) {
         res.redirect("/projects");
         return;
     }
@@ -39,7 +39,7 @@ exports.getProjects = function(req, res, next) {
 
     pivotal.useToken(req.body.token);
     
-    getUserProjects(req, function(err, projects) {
+    data.getUserProjects(req, function(err, projects) {
         if (err) {
             if (err.code) {
                 next(new e.HttpError(
@@ -74,7 +74,7 @@ exports.listProjects = function(req, res, next) {
         // NOTE: the token must be present already (and in pivotal module)
         //       based on the "hasToken()" middleware used in the routing in app.js
         
-        getUserProjects(req, function(err, projects) {
+        data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
                     next(new e.HttpError(
@@ -114,7 +114,7 @@ exports.viewProject = function(req, res, next) {
         // NOTE: the token must be present already (and in pivotal module)
         //       based on the "hasToken()" middleware used in the routing in app.js
         
-        getUserProjects(req, function(err, projects) {
+        data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
                     next(new e.HttpError(
@@ -142,8 +142,7 @@ exports.viewProject = function(req, res, next) {
 };
 
 
-
-// ------------- Private Helpers ------------- //
+// ------------- Private helpers ------------- //
 
 var renderProjectsPage = function(res, projects) {
     res.render('projects', {
@@ -153,53 +152,13 @@ var renderProjectsPage = function(res, projects) {
     });
 };
 
-
-var getUserProjects = function(dbScope, cb) {
-    if (dbScope.isFunction()) { cb = dbScope; dbScope = {}; }
-
-    pivotal.getProjects(function(err, ptData) {
-        if (err) {
-            console.log("Invalid user token provided", err);
-            cb(err);
-            return;
-        }
-
-        console.log(((ptData.project)?ptData.project.length:0) + " user projects retrieved from PT API");
-
-        mongo.connect(dbScope, function(err, db) {
-            if (err) { cb(err); return; }
-
-            db.collection("stats", function(err, coll) {
-                if (err) { cb(err); return; }
-
-                coll.distinct("project", function(err, mongoData) {
-                    if (err) { cb(err); return; }
-
-                    // Cross reference projects user has access to with projects
-                    // tracked by this system
-                    var projects = [];
-                    for (var i=0, l=ptData.project.length; i<l; ++i) {
-                        if (mongoData.indexOf(Number(ptData.project[i].id)) > -1) {
-                            projects.push(ptData.project[i]);
-                        }
-                    }
-
-                    cb(null, projects);
-                    return;
-                });
-            });
-        });
-    });
-};
-
-
 var renderProjectPage = function(res, project) {
     if (!project || !project.id) {
         res.send(404, "Sorry, but either that project does not exist in this system, or you do not have access to it!");
         return;
     }
 
-    getStatsForProject(project.id, function(err, stats) {
+    data.getStatsForProject(project.id, function(err, stats) {
 
         if (err) {
             next(new Error(err.toString(), 500));
@@ -214,35 +173,3 @@ var renderProjectPage = function(res, project) {
         });
     });
 };
-
-
-var getStatsForProject = function(project, options, cb) {
-    if (options.isFunction()) { cb = options; options = null; }
-    options = (options || {});
-    options.scope = (options.scope || {});
-    project = Number(project);
-
-    if (!project) {
-        cb("Please provide a valid project ID to get statistics");
-        return;
-    }
-
-    mongo.connect(options.scope, function(err, db) {
-        if (err) { cb(err); return; }
-
-        db.collection("stats", function(err, coll) {
-            if (err) { cb(err); return; }
-
-            coll
-            .find({ "project": project })
-            .sort({ "date": 1 })
-            .toArray(function(err, stats) {
-                if (err) { cb(err); return; }
-
-                cb(null, stats);
-                return;
-            });
-        });
-    });
-};
-
