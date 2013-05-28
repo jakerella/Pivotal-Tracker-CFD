@@ -1,0 +1,41 @@
+extend layout
+
+block scripts
+    script(src="/script/lib/jquery-1.9.1.min.js")
+
+block pageScript
+    script
+        $("#sendActivity").click(function(e) {
+            e.preventDefault();
+            var xml = $("#xml").val();
+
+            $("#result").html('');
+            $.ajax({
+                url: "/activity-hook",
+                data: xml,
+                type: "POST",
+                contentType: "application/xml",
+                dataType: "json",
+                success: function(d) {
+                    console.info("Activity posted!", d);
+                    $("#result").html("Activity posted!\n"+JSON.stringify(d));
+                },
+                error: function(xhr) {
+                    console.log("Error!", xhr);
+                    $("#result").html("Error posting activity ("+xhr.status+"):\n"+xhr.responseText);
+                }
+            });
+
+        });
+
+block content
+    div
+        p.intro
+            | You can test the web hooks here. If you need some example data, try 
+            | setting your web hook to point to a bin on 
+            | <a href="http://requestb.in">http://requestb.in</a>.
+        div
+            | <input type="button" id="sendActivity" value="Send XML Activity" /><br />
+            | <textarea id="xml" style="width:50em;height:25em;"></textarea><br />
+            | <div id="result" />
+        

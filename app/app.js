@@ -15,6 +15,7 @@ var app = express();
 // Config and middleware
 app.configure(function () {
     process.env["NODE_ENV"] = (process.env["NODE_ENV"] || "production");
+    app.testEnvs = ["dev", "development", "test", "testing", "qa"];
 
     app.set("port", process.env.PORT || 5000);
     app.set("views", __dirname + "/views");
@@ -54,12 +55,15 @@ if (!mongoInfo) {
 app.get("/", routes.index);
 app.get("/projects", routes.hasToken, routes.listProjects);
 app.get("/project/:id", routes.hasToken, routes.viewProject);
-// app.get("/stats/:id", routes.hasToken, routes.getStatsForProject);
+if (app.testEnvs.indexOf(process.env["NODE_ENV"]) > -1) {
+    //pivotal.debug = true;
+    app.get("/test-hook", routes.showHookText);
+}
 
 // POSTs
 app.post("/", routes.index);
 app.post("/projects", routes.getProjects);
-//app.post("/activity-hook", routes.hasToken, routes.activityHook);
+app.post("/activity-hook", routes.processActivityHook);
 
 
 http.createServer(app).listen(app.get("port"), function () {

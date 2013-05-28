@@ -18,7 +18,7 @@ var CONNECT_TIMEOUT  = 2000; // for multiple simultaneous connections
  * @param  {string} uri The connection URI string in the format: [protocol][username:password@]host[:port]/database
  * @return {object}     The parsed pieces of the connection URI
  */
-exports.parseConnectionURI = function (uri) {
+exports.parseConnectionURI = function(uri) {
     uri = (uri)?uri.toString():"";
 
     var m = uri.match(/^(?:mongodb\:\/\/)?(?:([^\/\:]+)\:([^\/\:@]+)@)?([^@\/\:]+)(?:\:([0-9]{1,5}))?\/(.+)$/i);
@@ -46,7 +46,7 @@ exports.parseConnectionURI = function (uri) {
  * @param  {object}   scope      The scope for the db connection (most likely the http request)
  * @param  {Function} cb         A callback for when the database is ready: function(err, db) { ... }
  */
-exports.connect = function (scope, cb, _startTime) {
+exports.connect = function(scope, cb, _startTime) {
     _startTime = (_startTime || (new Date()).getTime());
     if (scope && scope.isFunction()) { cb = scope; scope = null; }
 
@@ -62,6 +62,147 @@ exports.connect = function (scope, cb, _startTime) {
     } else {
         doConnect(scope, (cb || function() {}));
     }
+};
+
+
+exports.getOrCreateCollection = function(db, collName, cb) {
+    cb = (cb && cb.isFunction()) ? cb : function() {};
+
+    // createCollection without the "safe" option will 
+    // return the collection if it already exists
+    db.createCollection(collName, function(err, coll) {
+        if (err) { cb(err); return; }
+
+        cb(null, coll);
+        return;
+    });
+};
+
+
+exports.getOrCreateStory = function(story, dbScope, cb) {
+    if (dbScope.isFunction()) { cb = dbScope; dbScope = null; }
+    cb = (cb && cb.isFunction()) ? cb : function() {};
+    dbScope = (dbScope || {});
+
+    var self = this;
+    self.connect(dbScope, function(err, db) {
+        if (err) { cb(err); return; }
+
+        self.getOrCreateCollection(db, "story", function(err, coll) {
+            if (err) { cb(err, null); return; }
+
+            coll
+            .find({ "project": Number(story.project_id), "story": Number(story.id) })
+            .toArray(function(err, recs) {
+                if (err) { cb(err, null); return; }
+
+                if (recs.length) {
+                    // return existing story document
+                    cb(null, recs[0]);
+                    return;
+
+                } else {
+                    console.log("No existing story document for this ID ("+story.id+"), creating it...");
+
+                    coll.insert(
+                        {
+                               "project": Number(story.project_id),
+                                 "story": Number(story.id),
+                            "current_state": story.current_state
+                        },
+                        function(err, recs) {
+                            if (err) { cb(err, null); return; }
+
+                            cb(null, recs[0]);
+                            return;
+                        }
+                    );
+                }
+            });
+        });
+    });
+};
+
+exports.getOrCreateStats = function(project, date, dbScope, cb) {
+    if (dbScope.isFunction()) { cb = dbScope; dbScope = null; }
+    cb = (cb && cb.isFunction()) ? cb : function() {};
+    dbScope = (dbScope || {});
+
+    var self = this;
+    self.connect(dbScope, function(err, db) {
+        if (err) { cb(err); return; }
+
+        self.getOrCreateCollection(db, "stats", function(err, coll) {
+            if (err) { cb(err, null); return; }
+
+            coll
+            .find({ "project": Number(project), "date": date })
+            .limit(1)
+            .toArray(function(err, recs) {
+                if (err) { cb(err, null); return; }
+
+                if (recs.length) {
+                    // return existing stats document for this project/date
+                    cb(null, recs[0]);
+                    return;
+
+                } else {
+                    coll
+                    .find({ "project": Number(project), "date": {$lt: date} })
+                    .limit(1)
+                    .sort({ "date": -1 })
+                    .toArray(function(err, recs) {
+                        if (err) { cb(err, null); return; }
+
+                        if (recs.length) {
+                            console.log("Cloning previous stats document from "+recs[0].date+" for "+project+"/"+date);
+                            
+                            coll.insert({
+
+                                    "project": Number(project),
+                                       "date": date,
+                                "unscheduled": recs[0].unscheduled,
+                                  "unstarted": recs[0].unstarted,
+                                    "started": recs[0].started,
+                                   "finished": recs[0].finished,
+                                  "delivered": recs[0].delivered,
+                                   "accepted": recs[0].accepted
+
+                            }, function(err, rec) {
+                                if (err) { cb(err, null); return; }
+
+                                if (Array.isArray(rec)) { rec = rec[0]; }
+                                cb(null, rec);
+                                return;
+                            });
+
+                        } else {
+
+                            console.log("No previous stats document exists for "+project+", starting fresh at "+date);
+                            coll.insert({
+
+                                 "project": Number(project),
+                                    "date": date,
+                                "unscheduled": 0,
+                                  "unstarted": 0,
+                                    "started": 0,
+                                   "finished": 0,
+                                  "delivered": 0,
+                                   "accepted": 0
+
+                            }, function(err, rec) {
+                                if (err) { cb(err, null); return; }
+
+                                if (Array.isArray(rec)) { rec = rec[0]; }
+                                cb(null, rec);
+                                return;
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
 };
 
 

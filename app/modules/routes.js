@@ -26,10 +26,14 @@ exports.index = function(req, res, next) {
     res.render('index', { title: "PT Cumulative Flow Diagram - Login", page: "login" });
 };
 
+exports.showHookText = function(req, res, next) {
+    res.render('test-hook', { title: "PT Cumulative Flow Diagram - Test Hook", page: "test-hook" });
+};
+
 exports.getProjects = function(req, res, next) {
     console.log("getting projects for user token: ", req.body.token);
     if (!req.body.token || !req.body.token.length) {
-        next(new e.HttpError("Please provide a valid Pivotal Tracker API token", 403));
+        next(new e.BadRequestError("Please provide a valid Pivotal Tracker API token", 403));
         return;
     }
 
@@ -42,7 +46,7 @@ exports.getProjects = function(req, res, next) {
     data.getUserProjects(req, function(err, projects) {
         if (err) {
             if (err.code) {
-                next(new e.HttpError(
+                next(new e.BadRequestError(
                     ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                     err.code
                 ));
@@ -77,7 +81,7 @@ exports.listProjects = function(req, res, next) {
         data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
-                    next(new e.HttpError(
+                    next(new e.BadRequestError(
                         ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                         err.code
                     ));
@@ -117,7 +121,7 @@ exports.viewProject = function(req, res, next) {
         data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
-                    next(new e.HttpError(
+                    next(new e.BadRequestError(
                         ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                         err.code
                     ));
@@ -139,6 +143,56 @@ exports.viewProject = function(req, res, next) {
             return;
         });
     }
+};
+
+exports.processActivityHook = function(req, res, next) {
+    console.log("Handling activity web hook...");
+
+    var intervalHandle,
+         updateCount = 0,
+        processCount = 0,
+              errors = [],
+            activity = req.body;
+
+    if (!activity || !activity.id) {
+        next(new e.BadRequestError("Invalid activity object provided to web hook"));
+        return;
+    }
+
+    // if we don't have a PT_TOKEN, we'll need to use the system one
+    // NOTE: we only do this for this action (not for the end user UI)
+    if (!pivotal.token) {
+        console.log("No token assigned yet, using system token: "+process.env["PT_TOKEN"]);
+        pivotal.useToken(process.env["PT_TOKEN"]);
+    }
+
+    // get number of story updates first
+    activity.stories.each(function() { updateCount++; });
+
+    // now process each update
+    activity.stories.each(function(storyUpdate) {
+        console.log("processing story update activity ID: "+activity.id+" on story ID: "+storyUpdate.id);
+        data.processStoryUpdate(activity, storyUpdate, req, function(err, data) {
+            if (err) {
+                console.error("ERROR processing story "+storyUpdate.id+": ", err.toString());
+                errors.push(err.toString());
+            }
+            processCount++;
+        });
+    });
+
+    // since processing is asynchronous we need to wait until all are finished
+    // to send our response (and to check for any errors).
+    intervalHandle = setInterval(function() {
+        if (processCount >= updateCount) {
+            clearInterval(intervalHandle);
+            console.log("Done processing "+processCount+" story updates with "+errors.length+" errors");
+            res.send({
+                "message": "Activity XML received and processed",
+                "errors": ((errors.length) ? errors : null)
+            });
+        }
+    }, 300);
 };
 
 
