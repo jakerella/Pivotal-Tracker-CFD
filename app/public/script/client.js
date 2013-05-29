@@ -142,35 +142,29 @@
         app.addStatsTooltip({ node: n });
     };
 
-    /*
-    
-    STATS
-    show label and value on hover over any area in the chart (not just on data points)
-    show vertical line when hovering over x-axis
-    show horizontal line when hovering over y-axis
-    show all values for date when hovering over x-axis
-    show WIP stats when hovering x-axis
-    show avg lead time when hovering x-axis
-
-     */
-
-     app.addStatsTooltip = function(options) {
+    app.addStatsTooltip = function(options) {
         options = (options || {});
 
-        $(options.node).on("plothover", function (e, pos, item) {
-            if (!app.hoverTO) {
-                app.hoverTO = setTimeout(function() {
-                    _doAddStatsTooltip(e, pos, item);
-                }, 50);
-            }
-        });
-     };
+        $(options.node)
+            .on("plothover", function (e, pos, item) {
+                if (!app.hoverTO) {
+                    app.hoverTO = setTimeout(function() {
+                        _doAddStatsTooltip(e, pos, item);
+                    }, 50);
+                }
+            })
+            .on("mouseout", function() {
+                app.hideTooltip();
+            });
+    };
 
-     var _doAddStatsTooltip = function(e, pos, item) {
+    var _doAddStatsTooltip = function(e, pos, item) {
         app.hoverTO = null;
 
-        var i, j, l, m, y, d, p1, p2, series, xTime,
+        var i, x, l, m, y, d, p1, p2, xTime,
                text = "",
+             series = {},
+                wip = 0,
                axes = app.plot.getAxes(),
             dataset = app.plot.getData();
 
@@ -182,18 +176,15 @@
         }
         
         for (i=0, l=dataset.length; i<l; ++i) {
-            y = 0;
-            series = dataset[i];
-
             // Find the nearest points, x-wise
-            for (j=0, m=series.data.length; j<m; ++j) {
-                if (series.data[j][0] > pos.x) {
+            for (x=0, m=dataset[i].data.length; x<m; ++x) {
+                if (dataset[i].data[x][0] > pos.x) {
                     break;
                 }
             }
 
-            p1 = series.data[j - 1];
-            p2 = series.data[j];
+            p1 = dataset[i].data[x - 1];
+            p2 = dataset[i].data[x];
 
             if (p1 === null) {
                 y = p2[1];
@@ -201,7 +192,7 @@
             } else if (p2 === null) {
                 y = p1[1];
                 xTime = p1[0];
-            } else if ((p2[0] - pos.x) < (pos.x - p1[0])) {
+            } else if (p1 && p2 && (p2[0] - pos.x) < (pos.x - p1[0])) {
                 y = p2[1];
                 xTime = p2[0];
             } else {
@@ -209,15 +200,23 @@
                 xTime = p1[0];
             }
 
-            text += "<br />"+series.label+": "+y;
+            series[dataset[i].label] = y;
+            text += "<br />"+dataset[i].label+": "+y;
         }
 
         d = new Date(xTime);
+        for (l in series) {
+            if (l === "Started" || l == "Finished") {
+                wip += series[l];
+            }
+        }
 
         app.showTooltip(
             pos.pageX,
             pos.pageY,
-            "Stats for "+(d.getMonth()+1)+"/"+d.getDate()+"/"+d.getFullYear()+": "+text
+            "Stats for "+(d.getMonth()+1)+"/"+d.getDate()+"/"+d.getFullYear()+": "+
+            "<br />WIP: "+wip+
+            text
         );
 
     };
