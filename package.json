@@ -1,7 +1,7 @@
 {
     "name": "pt-cfd",
     "description": "A cumulative flow diagram statistics gatherer (and charter) for users of Pivotal Tracker.",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "engines": {
         "node": "0.10.x",
         "npm": "1.2.x"
