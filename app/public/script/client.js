@@ -5,6 +5,10 @@
 
     var app = window.PTCFD = (window.PTCFD || {});
     app.cookie = "ptcfd_token";
+    app.plot = null; // the chart plot
+    app.tooltip = null;
+    app.hoverTO = null; // for tooltips
+
 
 
     app.redirectToProjects = function() {
@@ -69,16 +73,16 @@
 
 
     app.showChart = function(options) {
-        var i, j, l, m, t,
+        var i, j, l, m, t, n,
             seriesData = {},
              chartData = [];
 
         options = (options || {});
-        options.node = $(options.node);
+        n = $(options.node);
         options.data = (options.data || app.stats);
         options.series = (options.series || ["Accepted", "Finished", "Started", "Unstarted"]);
 
-        if (!options.node.length || !options.data) {
+        if (!n.length || !options.data) {
             app.error("Sorry, but it looks like there's no data to display!");
             return;
         }
@@ -109,7 +113,7 @@
         }
 
         console.log("Plotting chart with:", chartData);
-        $.plot(options.node, chartData, {
+        app.plot = $.plot(n, chartData, {
             legend: {
                 position: "nw",
                 backgroundOpacity: 0
@@ -126,10 +130,113 @@
                     fill: true,
                     steps: false
                 }
+            },
+            crosshair: {
+                mode: "x"
+            },
+            grid: {
+                hoverable: true
             }
         });
+
+        app.addStatsTooltip({ node: n });
     };
 
+    /*
+    
+    STATS
+    show label and value on hover over any area in the chart (not just on data points)
+    show vertical line when hovering over x-axis
+    show horizontal line when hovering over y-axis
+    show all values for date when hovering over x-axis
+    show WIP stats when hovering x-axis
+    show avg lead time when hovering x-axis
+
+     */
+
+     app.addStatsTooltip = function(options) {
+        options = (options || {});
+
+        $(options.node).on("plothover", function (e, pos, item) {
+            if (!app.hoverTO) {
+                app.hoverTO = setTimeout(function() {
+                    _doAddStatsTooltip(e, pos, item);
+                }, 50);
+            }
+        });
+     };
+
+     var _doAddStatsTooltip = function(e, pos, item) {
+        app.hoverTO = null;
+
+        var i, j, l, m, y, d, p1, p2, series, xTime,
+               text = "",
+               axes = app.plot.getAxes(),
+            dataset = app.plot.getData();
+
+        if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
+            pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
+            // out of range
+            app.hideTooltip();
+            return;
+        }
+        
+        for (i=0, l=dataset.length; i<l; ++i) {
+            y = 0;
+            series = dataset[i];
+
+            // Find the nearest points, x-wise
+            for (j=0, m=series.data.length; j<m; ++j) {
+                if (series.data[j][0] > pos.x) {
+                    break;
+                }
+            }
+
+            p1 = series.data[j - 1];
+            p2 = series.data[j];
+
+            if (p1 === null) {
+                y = p2[1];
+                xTime = p2[0];
+            } else if (p2 === null) {
+                y = p1[1];
+                xTime = p1[0];
+            } else if ((p2[0] - pos.x) < (pos.x - p1[0])) {
+                y = p2[1];
+                xTime = p2[0];
+            } else {
+                y = p1[1];
+                xTime = p1[0];
+            }
+
+            text += "<br />"+series.label+": "+y;
+        }
+
+        d = new Date(xTime);
+
+        app.showTooltip(
+            pos.pageX,
+            pos.pageY,
+            "Stats for "+(d.getMonth()+1)+"/"+d.getDate()+"/"+d.getFullYear()+": "+text
+        );
+
+    };
+
+    app.showTooltip = function(x, y, text) {
+        if (!app.tooltip) {
+            app.tooltip = $("<div class='tooltip'>" + text + "</div>").appendTo("body");
+        } else {
+            app.tooltip.html(text);
+        }
+
+        // TODO: check for right/bottom edges and move tooltip
+
+        app.tooltip.css({ top: (y + 5), left: (x + 5) }).show();
+     };
+
+     app.hideTooltip = function() {
+        if (app.tooltip) { app.tooltip.hide(); }
+     };
 
 
     // ---------------- Helpers ---------------- //

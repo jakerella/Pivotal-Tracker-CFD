@@ -34,3 +34,12 @@ form#login { text-align: center; }
     margin: 0;
 }
 #chart { width: 700px; height: 500px; }
+
+.tooltip {
+    position: absolute;
+    display: none;
+    border: 1px solid #fdd;
+    padding: 2px;
+    background-color: #fee;
+    opacity: 0.80;
+}
