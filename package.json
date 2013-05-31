@@ -8,7 +8,11 @@
     },
     "private": true,
     "scripts": {
-        "start": "node app/app"
+        "start": "node app/app",
+        "test": "node_modules/mocha/bin/mocha -R tap"
+    },
+    "devDependencies": {
+        "mocha": "~1.10.0"
     },
     "dependencies": {
         "express": "3.x",
