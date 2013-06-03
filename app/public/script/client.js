@@ -99,7 +99,7 @@
         // stuff all stats data into chart data series holders
         for (i=0, l=options.data.length; i<l; ++i) {
             // get timestamp from date entry
-            t = (new Date(options.data[i].date)).getTime();
+            t = (new Date(options.data[i].date+"T12:00:00")).getTime();
 
             // add data from each entry to series
             for (j=0, m=options.series.length; j<m; ++j) {
