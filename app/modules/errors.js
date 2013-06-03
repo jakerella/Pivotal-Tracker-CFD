@@ -13,11 +13,20 @@ HttpError.prototype.status = 500;
 var BadRequestError = function (msg, status, constr) {
     Error.captureStackTrace(this, constr || this);
     this.message = msg || 'Bad Request Error';
-    this.status = status || 401;
+    this.status = status || 400;
 };
 util.inherits(BadRequestError, HttpError);
 BadRequestError.prototype.name = 'Bad Request Error';
-BadRequestError.prototype.status = 401;
+BadRequestError.prototype.status = 400;
+
+var AuthError = function (msg, status, constr) {
+    Error.captureStackTrace(this, constr || this);
+    this.message = msg || 'Authentication Error';
+    this.status = status || 401;
+};
+util.inherits(AuthError, HttpError);
+AuthError.prototype.name = 'Authentication Error';
+AuthError.prototype.status = 401;
 
 var DatabaseError = function (msg, status, constr) {
     Error.captureStackTrace(this, constr || this);
@@ -31,5 +40,6 @@ DatabaseError.prototype.status = 500;
 module.exports = {
   HttpError: HttpError,
   BadRequestError: BadRequestError,
+  AuthError: AuthError,
   DatabaseError: DatabaseError
 };

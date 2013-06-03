@@ -1,6 +1,7 @@
 
 var     e = require("./errors.js"),
-     data = require("./data-helper.js");
+     data = require("./data-helper.js"),
+    mongo = require("./mongo-helper.js");
 
 var PIVOTAL_TOKEN_COOKIE = "ptcfd_token";
 
@@ -70,7 +71,7 @@ exports.getProjects = function(req, res, next) {
 exports.listProjects = function(req, res, next) {
     if (req.session.projects) {
         
-        renderProjectsPage(res, req.session.projects);
+        renderProjectsPage(res, next, req.session.projects);
         return;
 
     } else {
@@ -92,7 +93,7 @@ exports.listProjects = function(req, res, next) {
             }
 
             req.session.projects = projects;
-            renderProjectsPage(res, projects);
+            renderProjectsPage(res, next, projects);
             return;
         });
     }
@@ -111,7 +112,7 @@ exports.viewProject = function(req, res, next) {
             }
         }
         
-        renderProjectPage(res, project);
+        renderProjectPage(res, next, project);
         return;
 
     } else {
@@ -139,11 +140,104 @@ exports.viewProject = function(req, res, next) {
                 }
             }
 
-            renderProjectPage(res, project);
+            renderProjectPage(res, next, project);
             return;
         });
     }
 };
+
+exports.editProject = function(req, res, next) {
+    var i, project = null;
+
+    if (req.session.projects) {
+        if (req.session.projects) {
+            for (i in req.session.projects) {
+                if (req.session.projects[i].id == req.params.id) {
+                    project = req.session.projects[i];
+                }
+            }
+        }
+
+        renderProjectEditPage(res, next, project);
+        return;
+
+    } else {
+        // NOTE: the token must be present already (and in pivotal module)
+        //       based on the "hasToken()" middleware used in the routing in app.js
+        
+        data.getUserProjects(req, function(err, projects) {
+            if (err) {
+                if (err.code) {
+                    next(new e.BadRequestError(
+                        ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
+                        err.code
+                    ));
+                } else {
+                    next(new Error(err.toString(), 500));
+                }
+                return;
+            }
+
+            req.session.projects = projects;
+
+            for (var i in req.session.projects) {
+                if (req.session.projects[i].id == req.params.id) {
+                    project = req.session.projects[i];
+                }
+            }
+
+            renderProjectEditPage(res, next, project);
+            return;
+        });
+    }
+};
+
+exports.updateStats = function(req, res, next) {
+    var i, project;
+
+    if (req.session.projects) {
+        if (req.session.projects) {
+            for (i in req.session.projects) {
+                if (req.session.projects[i].id == req.params.id) {
+                    project = req.session.projects[i];
+                }
+            }
+        }
+
+        doStatsUpdate(res, next, project, req.body.stats);
+        return;
+
+    } else {
+        // NOTE: the token must be present already (and in pivotal module)
+        //       based on the "hasToken()" middleware used in the routing in app.js
+        
+        data.getUserProjects(req, function(err, projects) {
+            if (err) {
+                if (err.code) {
+                    next(new e.BadRequestError(
+                        ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
+                        err.code
+                    ));
+                } else {
+                    next(new Error(err.toString(), 500));
+                }
+                return;
+            }
+
+            req.session.projects = projects;
+
+            for (var i in req.session.projects) {
+                if (req.session.projects[i].id == req.params.id) {
+                    project = req.session.projects[i];
+                }
+            }
+
+            doStatsUpdate(res, next, project, req.body.stats);
+            return;
+        });
+    }
+};
+
 
 exports.processActivityHook = function(req, res, next) {
     console.log("Handling activity web hook...");
@@ -198,7 +292,7 @@ exports.processActivityHook = function(req, res, next) {
 
 // ------------- Private helpers ------------- //
 
-var renderProjectsPage = function(res, projects) {
+var renderProjectsPage = function(res, next, projects) {
     res.render('projects', {
         title: "PT Cumulative Flow Diagram - Projects",
         page: "projects",
@@ -206,9 +300,9 @@ var renderProjectsPage = function(res, projects) {
     });
 };
 
-var renderProjectPage = function(res, project) {
+var renderProjectPage = function(res, next, project) {
     if (!project || !project.id) {
-        res.send(404, "Sorry, but either that project does not exist in this system, or you do not have access to it!");
+        next(new e.BadRequestError("Sorry, but either that project does not exist in this system, or you do not have access to it!", 404));
         return;
     }
 
@@ -226,4 +320,129 @@ var renderProjectPage = function(res, project) {
             stats: JSON.stringify(stats)
         });
     });
+};
+
+var renderProjectEditPage = function(res, next, project) {
+    if (!project || !project.id) {
+        next(new e.BadRequestError("Sorry, but either that project does not exist in this system, or you do not have access to it!", 404));
+        return;
+    }
+
+    authenticateOwner(function(err, owner) {
+        if (err) { next(err); return; }
+
+        res.render('edit', {
+            title: "PT Cumulative Flow Diagram - Edit "+project.name,
+            page: "edit-project",
+            project: project
+        });
+    });
+};
+
+var doStatsUpdate = function(res, next, project, statsUpdate) {
+    if (!project || !project.id) {
+        next(new e.BadRequestError("Sorry, but either that project does not exist in this system, or you do not have access to it!", 404));
+        return;
+    }
+
+    if (!statsUpdate || !statsUpdate.date || !statsUpdate.project) {
+        next(new e.BadRequestError("Sorry, but that is not a valid stats update object!", 400));
+        return;
+    }
+
+    statsUpdate.project = Number(statsUpdate.project);
+    if (!statsUpdate.project || statsUpdate.project != project.id) {
+        next(new e.BadRequestError("Sorry, but your stats update ID does not match your update URL!", 400));
+        return;
+    }
+
+    if (!/^20[0-9]{2}\-(0[1-9]|1[0-2])\-(0[1-9]|[12][0-9]|3[01])$/.test(statsUpdate.date)) {
+        next(new e.BadRequestError("Sorry, but that is not a valid stats date!", 400));
+        return;
+    }
+
+    console.log("Stats document being saved by "+pivotal.token, statsUpdate);
+
+    authenticateOwner(function(err, owner) {
+        if (err) { next(err); return; }
+
+        mongo.getOrCreateStats(
+            project.id,
+            statsUpdate.date,
+            res,
+            function(err, stats) {
+                if (err) { next(err); return; }
+
+                // merge in the stats updates
+                for (var k in statsUpdate) {
+                    if (k != "project" && 
+                        k != "date" &&
+                        statsUpdate.hasOwnProperty(k)) {
+                        stats[k] = Number(statsUpdate[k]);
+                    }
+                }
+
+                // Do the DB update
+                mongo.connect(res, function(err, db) {
+                    if (err) { next(err); return; }
+
+                    mongo.getOrCreateCollection(db, "stats", function(err, coll) {
+                        if (err) { next(err); return; }
+
+                        // update the statistics for this date in our DB
+                        coll.update({_id: stats._id}, stats, {safe: true}, function(err) {
+                            if (err) { next(err); return; }
+                            
+                            console.log("Stats document update", stats);
+
+                            res.writeHead(200, {"Content-Type": "application/json"});
+                            res.end(JSON.stringify({ project: project, stats: stats }));
+                        });
+                    });
+                });
+            }
+        );
+    });
+};
+
+var authenticateOwner = function(cb) {
+
+    // TODO: we need to figure out how we can do this...
+
+    cb(null, {});
+
+
+    // var username = "jordankasper";
+    // var password = "";
+
+    // console.log("Authenticating user ("+username+") for editing project "+req.params.id);
+    
+    // pivotal.getToken(username, password, function(err, user){
+    //     if(err){
+    //         next(new e.AuthError(
+    //             ((err.code && err.code == 401) ? "Sorry, but your authentication failed, that may not be a valid Pivotal Tracker username and password!" : err.desc),
+    //             (err.code || 401)
+    //         ));
+    //         return;
+    //     }
+
+    //     if (user.guid != pivotal.token) {
+    //         next(new e.AuthError("Sorry, but that username doesn't match the token you are using!"));
+    //         return;
+    //     }
+
+    //     pivotal.getMemberships(req.params.id, function(err, member) {
+    //         if (err) {
+    //             next(new e.AuthError(
+    //                 ((err.code && err.code == 401) ? "Sorry, but your authentication failed, you may not be a member of this project!" : err.desc),
+    //                 (err.code || 401)
+    //             ));
+    //             return;
+    //         }
+
+    //         console.log("got membership data: ", member);
+
+    //     });
+    // });
+
 };

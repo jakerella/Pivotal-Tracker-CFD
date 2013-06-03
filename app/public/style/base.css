@@ -35,6 +35,8 @@ form#login { text-align: center; }
 }
 #chart { width: 700px; height: 500px; }
 
+input[name=stats] { width: 30em; }
+
 .tooltip {
     position: absolute;
     display: none;

@@ -221,6 +221,40 @@
 
     };
 
+    app.updateStats = function(data, cb) {
+        cb = ($.isFunction(cb))? cb : (function() {});
+        console.log("Updating stats with: ", data);
+
+        // do the update ajax call
+        $.ajax({
+            url: "/project/"+data.project+"/stats/edit",
+            data: { stats: data },
+            type: "post",
+            dataType: "json",
+            success: function(d) {
+                console.log("Stats updated: ", d);
+                cb(null, d);
+            },
+            error: function(xhr) {
+                try {
+                    var e = JSON.parse(xhr.responseText);
+                    console.error(e);
+                    if (!e || !e.error || e.error.status >= 500) {
+                        cb("Sorry, but there was an error on the server. Please try again or contact the administrator.");
+                    } else {
+                        cb(e.error.message);
+                    }
+                } catch (Error) {
+                    console.error(xhr.responseText);
+                    cb("Sorry, but there was an error on the server. Please try again or contact the administrator.");
+                }
+            }
+        });
+    };
+
+
+    // ---------------- Helpers ---------------- //
+
     app.showTooltip = function(x, y, text) {
         if (!app.tooltip) {
             app.tooltip = $("<div class='tooltip'>" + text + "</div>").appendTo("body");
@@ -231,14 +265,11 @@
         // TODO: check for right/bottom edges and move tooltip
 
         app.tooltip.css({ top: (y + 5), left: (x + 5) }).show();
-     };
+    };
 
-     app.hideTooltip = function() {
+    app.hideTooltip = function() {
         if (app.tooltip) { app.tooltip.hide(); }
-     };
-
-
-    // ---------------- Helpers ---------------- //
+    };
 
     app.messageNode = $("#messages");
     app.alert = function(msg, cls, to) {

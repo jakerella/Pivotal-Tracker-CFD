@@ -1,0 +1,67 @@
+extend layout
+
+block scripts
+    script(src="/script/lib/jquery-1.9.1.min.js")
+    script(src="/script/client.js")
+
+block pageScript
+    script
+        console.log("starting admin console...");
+        $("form#update-stats").submit(function(e) {
+            e.preventDefault();
+            var i, l, statsVal, stat, stats;
+
+            stats = {
+                project: $(this).find("[name=project]").val(),
+                date: $(this).find("[name=date]").val()
+            };
+
+            statsVal = $(this).find("[name=stats]").val().split(",");
+            for (i=0, l=statsVal.length; i<l; ++i) {
+                stat = statsVal[i].split(":");
+                if (stat.length == 2 && Number(stat[1])) {
+                    stats[stat[0].trim()] = Number(stat[1]);
+                }
+            }
+
+            var ld = $(this).find(".loading").show();
+            PTCFD.clearMessages(function() {
+                PTCFD.updateStats(stats, function(err, stats) {
+                    ld.hide();
+                    if (err) { PTCFD.error(err); return; }
+                    PTCFD.success("The stats for this project were updated successfully.");
+                });
+            });
+
+            return false;
+        });
+
+        if ((new Date()).toJSON) {
+            $("[name=date]").val((new Date()).toJSON().substr(0,10));
+        }
+        
+
+block content
+    p.intro
+        | This is the administrative interface for The PT CFD UI. Here you can tweak 
+        | certain things for this project.<br />
+        | <a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View this project on Pivotal tracker</a><br />
+        | <a href="/project/#{project.id}">Go to the chart</a>
+
+    form(id="update-stats", action="", method="POST")
+        p Set data for a given date...
+        div
+            label(for="stats-date") Date:
+            input(type="date", id="stats-date", name="date", value="", placeholder="YYYY-MM-DD")
+        div
+            label(for="stats=-values") Stats:
+            input(type="text", id="stats-values", name="stats", placeholder='Stats (i.e. "started: 2, unstarted: 34")')
+        p.fine
+            | Please enter the stats in the form:<br />
+            | [stat]: [value], ...<br />
+            | Also note that this will UPDATE data on a given date, thus 
+            | any values not provided will retain their original values.
+        div
+            input(type="hidden", name="project", value="#{project.id}")
+            input(type="submit", value="Save")
+            img(src="/images/ajax-loader.gif", alt="Working...", class="loading")

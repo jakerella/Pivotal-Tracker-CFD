@@ -55,6 +55,7 @@ if (!mongoInfo) {
 app.get("/", routes.index);
 app.get("/projects", routes.hasToken, routes.listProjects);
 app.get("/project/:id", routes.hasToken, routes.viewProject);
+app.get("/project/:id/edit", routes.hasToken, routes.editProject);
 if (app.testEnvs.indexOf(process.env["NODE_ENV"]) > -1) {
     //pivotal.debug = true;
     app.get("/test-hook", routes.showHookText);
@@ -63,6 +64,7 @@ if (app.testEnvs.indexOf(process.env["NODE_ENV"]) > -1) {
 // POSTs
 app.post("/", routes.index);
 app.post("/projects", routes.getProjects);
+app.post("/project/:id/stats/edit", routes.hasToken, routes.updateStats);
 app.post("/activity-hook", routes.processActivityHook);
 
 
