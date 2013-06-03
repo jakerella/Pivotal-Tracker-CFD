@@ -38,6 +38,7 @@ form#login { text-align: center; }
 input[name=stats] { width: 30em; }
 
 .tooltip {
+    min-width: 10em;
     position: absolute;
     display: none;
     border: 1px solid #fdd;

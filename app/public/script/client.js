@@ -262,9 +262,25 @@
             app.tooltip.html(text);
         }
 
-        // TODO: check for right/bottom edges and move tooltip
+        var  w = $(window),
+            ww = w.width(),
+            wh = w.height(),
+             t = (y+10),
+             r = "auto",
+             b = "auto",
+             l = (x+10);
 
-        app.tooltip.css({ top: (y + 5), left: (x + 5) }).show();
+        // check for right/bottom edges and move tooltip
+        if ((app.tooltip.width() + x + 15) > ww) {
+            r = (ww-(x-10));
+            l = "auto";
+        }
+        if ((app.tooltip.height() + y + 15) > wh) {
+            b = (wh-(y-10));
+            t = "auto";
+        }
+
+        app.tooltip.css({ top: t, right: r, bottom: b, left: l }).show();
     };
 
     app.hideTooltip = function() {
