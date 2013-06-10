@@ -80,7 +80,7 @@
         options = (options || {});
         n = $(options.node);
         options.data = (options.data || app.stats);
-        options.series = (options.series || ["Accepted", "Finished", "Started", "Unstarted"]);
+        options.series = (options.series || ["Accepted", "Delivered", "Finished", "Started", "Unstarted"]);
 
         if (!n.length || !options.data) {
             app.error("Sorry, but it looks like there's no data to display!");
