@@ -5,6 +5,8 @@ A cumulative flow diagram statistics gatherer (and charter) for users of Pivotal
 
 Pivotal Tracker CFD is a small Node.js/Express/MongoDB app which gathers statistics from Pivotal Tracker using PT's [activity web hook](https://www.pivotaltracker.com/help/integrations#activity_web_hook) and provides a simple UI for viewing the resulting cumulative flow diagram. It includes basic authentication using PT API tokens. The intent is that while you can view the UI directly, you can easily include it as an iframe in any other reporting system that allows it.
 
+_Disclaimer: This is an appendTo Labs project and as such there is no promise of support or even future development of this project. We are working on this project to meet a need at appendTo and sharing it in the spirit of open source software. If it helps you or your team meet needs as well, that is awesome – however, use at your own risk._
+
 ## Server Installation
 
 ### Database (MongoDB)
