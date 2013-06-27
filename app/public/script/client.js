@@ -128,7 +128,7 @@
                 lines: {
                     show: true,
                     fill: true,
-                    steps: false
+                    steps: true
                 }
             },
             crosshair: {
