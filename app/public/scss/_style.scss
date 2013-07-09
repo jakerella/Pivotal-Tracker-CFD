@@ -1,0 +1,113 @@
+// General
+// ====================================================================
+* { @include box-sizing(border-box); }
+
+body {
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	font-size: 100%;
+	background: #ecf0f1;
+	color: $body;
+	font-family: 'PT Sans', sans-serif;
+}
+
+html {
+	margin: 0;
+	padding: 0;
+}
+
+a, a:hover, a:focus, a:active {
+	outline: none;
+}
+
+.contain {
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 0 15px;
+}
+
+
+// Header
+// ====================================================================
+header {
+	background: $primary;
+	width: 100%;
+	margin: 0;
+	color: $white;
+	overflow: hidden;
+
+	.contain {
+		padding: 0;
+	}
+
+	h1 {
+		float: left;
+		width: 100%;
+		text-align: center;
+		margin: 0;
+		padding: 15px 0;
+		font-weight: 700;
+		font-size: em(20,16);
+		line-height: em(18,16);
+	}
+
+	.credit {
+		float: left;
+		width: 100%;
+		background: $primary-dark;
+		padding: 5px 0;
+
+		img {
+			display: none;
+		}
+	}
+}
+
+
+// Main Content
+// ====================================================================
+.page_contain {
+	background: $white;
+	width: 100%;
+	margin: 0 auto;
+	float: left;
+	padding: 25px 0;
+
+	h2 {
+		margin: 0;
+		padding: 0;
+		float: left;
+		width: 100%;
+		color: $heading;
+		font-size: em(18,16);
+		line-height: em(18,16);
+	}
+
+	p.intro {
+		float: left;
+		width: 100%;
+		margin: 25px 0;
+		padding: 0;
+		font-size: em(13,16);
+		line-height: em(20,16);
+	}
+
+	form#login {
+		float: left;
+		width: 100%;
+
+		input[type=text] {
+			float: left;
+			width: 100%;
+			box-sizing: border-box;
+		}
+	}
+}
+
+
+// Footer
+// ====================================================================
+footer {
+	width: 100%;
+	margin: 0;
+}

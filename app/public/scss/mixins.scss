@@ -1,0 +1,5 @@
+@function em( $fontSize, $contextSize: 16 ) {
+	@return 1em * ( $fontSize / $contextSize ); }
+
+@function pct( $size, $context ) {
+	@return percentage( $size / $context ); }
