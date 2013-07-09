@@ -2,7 +2,7 @@
 npm-debug.log
 tmp/*
 dist/*
-.sass-cache/*
+app/public/.sass-cache/*
 .grunt/*
 
 # We don't want to check in packages
