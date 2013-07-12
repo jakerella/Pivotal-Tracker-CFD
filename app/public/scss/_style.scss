@@ -20,6 +20,15 @@ a, a:hover, a:focus, a:active {
 	outline: none;
 }
 
+a {
+	color: $link;
+	text-decoration: none;
+	@include transition(color .3s ease);
+	&:hover {
+		color: $link-hover;
+	}
+}
+
 .contain {
 	max-width: 1000px;
 	margin: 0 auto;
@@ -35,11 +44,9 @@ header {
 	margin: 0;
 	color: $white;
 	overflow: hidden;
-
 	.contain {
 		padding: 0;
 	}
-
 	h1 {
 		float: left;
 		width: 100%;
@@ -49,16 +56,31 @@ header {
 		font-weight: 700;
 		font-size: em(20,16);
 		line-height: em(18,16);
+		@include breakpoint(med) { 
+			text-align: left;
+			width: auto;
+			padding: 30px 15px;
+			font-size: em(24,16);
+		}
 	}
-
 	.credit {
 		float: left;
 		width: 100%;
 		background: $primary-dark;
 		padding: 5px 0;
-
 		img {
 			display: none;
+		}
+		@include breakpoint(med) {
+			float: right;
+			margin-right: 15px;
+			width: auto;
+			padding: 0 37px;
+			height: 87px;
+			img {
+				display: block;
+				margin-top: 27px;
+			}
 		}
 	}
 }
@@ -71,35 +93,72 @@ header {
 	width: 100%;
 	margin: 0 auto;
 	float: left;
-	padding: 25px 0;
-
+	padding: 35px 0;
+	@include breakpoint(med) {
+		padding: 95px 0;
+	}
+	.img {
+		float: left;
+		width: 25%;
+		height: auto;
+		margin-right: 5%;
+		@include breakpoint(med) {
+			margin-bottom: 95px;
+		}
+	}
 	h2 {
 		margin: 0;
 		padding: 0;
 		float: left;
-		width: 100%;
+		width: 70%;
 		color: $heading;
 		font-size: em(18,16);
 		line-height: em(18,16);
+		@include breakpoint(med) {
+			font-size: em(24,16);
+		}
 	}
-
 	p.intro {
-		float: left;
+		float: right;
 		width: 100%;
 		margin: 25px 0;
 		padding: 0;
 		font-size: em(13,16);
 		line-height: em(20,16);
+		@include breakpoint(sml) {
+			width: 70%;
+		}
+		@include breakpoint(med) {
+			font-size: em(16,16);
+		}
 	}
-
 	form#login {
 		float: left;
 		width: 100%;
-
 		input[type=text] {
 			float: left;
-			width: 100%;
-			box-sizing: border-box;
+			width: 80%;
+			height: 45px;
+			background: #ecf0f1;
+			border: none;
+			padding: 0 3%;
+			font-weight: 700;
+			@include border-left-radius(3px);
+			color: $input;
+		}
+		input[type=submit] {
+			float: right;
+			width: 20%;
+			height: 45px;
+			border: none;
+			background: $cta;
+			color: $white;
+			font-weight: 700;
+			@include border-right-radius(3px);
+			@include transition(background .3s ease);
+			&:hover {
+				background: $cta-hover;
+			}
 		}
 	}
 }
@@ -110,4 +169,13 @@ header {
 footer {
 	width: 100%;
 	margin: 0;
+	padding: 15px 0;
+	overflow: hidden;
+	p {
+		text-align: center;
+		font-size: em(13,16);
+		@include breakpoint(med) {
+			font-size: em(15,16);
+		}
+	}
 }
