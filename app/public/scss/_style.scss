@@ -104,6 +104,7 @@ header {
 		margin-right: 5%;
 		@include breakpoint(med) {
 			margin-bottom: 95px;
+			width: auto;
 		}
 	}
 	h2 {
@@ -116,6 +117,8 @@ header {
 		line-height: em(18,16);
 		@include breakpoint(med) {
 			font-size: em(24,16);
+			width: auto;
+			float: none;
 		}
 	}
 	p.intro {
@@ -130,6 +133,8 @@ header {
 		}
 		@include breakpoint(med) {
 			font-size: em(16,16);
+			float: none;
+			width: auto;
 		}
 	}
 	form#login {
