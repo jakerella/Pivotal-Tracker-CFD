@@ -11,7 +11,7 @@ block pageScript
 
 block content
     img(src="/images/graph.jpg", class="img")
-    h2
+    h2.intro_title
         | A cumulative flow diagram statistics gatherer (and charter) for users of Pivotal Tracker.
     p.intro 
         | Pivotal Tracker CFD is a small Node.js/Express/MongoDB app which gathers statistics from Pivotal Tracker using PT's activity web hook and provides a simple UI for viewing the resulting cumulative flow diagram. It includes basic authentication using PT API tokens. The intent is that while you can view the UI directly, you can easily include it as an iframe in any other reporting system that allows it.

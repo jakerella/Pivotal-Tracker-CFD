@@ -6,11 +6,12 @@ block scripts
     script(src="/script/client.js")
 
 block content
-    p.intro 
-        | These are all of the projects you can access in this system:
+    h2 Your projects
 
-    ul
+    p.subtitle These are all the projects you have access to in the system:
+
+    ul.project_list
         - each project in projects
             li 
-                | <a href="/project/#{project.id}">#{project.name}</a> (<a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View on PT</a>)
+                | <a href="/project/#{project.id}">#{project.name}</a>
     
