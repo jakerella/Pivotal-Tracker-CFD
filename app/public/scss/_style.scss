@@ -142,9 +142,14 @@ header {
 			background: #ecf0f1;
 			border: none;
 			padding: 0 3%;
+			font-size: em(16,16);
 			font-weight: 700;
 			@include border-left-radius(3px);
 			color: $input;
+			@include breakpoint(med) {
+				height: 74px;
+				font-size: em(28,16);
+			}
 		}
 		input[type=submit] {
 			float: right;
@@ -153,12 +158,23 @@ header {
 			border: none;
 			background: $cta;
 			color: $white;
+			font-size: em(16,16);
 			font-weight: 700;
 			@include border-right-radius(3px);
 			@include transition(background .3s ease);
 			&:hover {
 				background: $cta-hover;
 			}
+			@include breakpoint(med) {
+				height: 74px;
+				font-size: em(28,16);
+			}
+		}
+		p.sub {
+			float: left;
+			font-size: em(13,16);
+			color: #95a5a6;
+			margin-left: 3%;
 		}
 	}
 }
@@ -171,6 +187,9 @@ footer {
 	margin: 0;
 	padding: 15px 0;
 	overflow: hidden;
+	@include breakpoint(med) {
+		padding: 75px 0;
+	}
 	p {
 		text-align: center;
 		font-size: em(13,16);
