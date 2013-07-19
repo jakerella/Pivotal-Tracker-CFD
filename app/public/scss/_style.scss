@@ -258,6 +258,33 @@ ul.project_list {
 }
 
 
+// Individual Project
+// ====================================================================
+.btn {
+	float: right;
+	padding: 4px 30px 4px 10px;
+	margin-top: -27px;
+	color: $white;
+	font-size: em(14,16);
+	font-weight: 700;
+	background: url(../images/link_icon.png) no-repeat right 10px center $cta;
+	background-size: 13px 13px;
+	@include border-radius(3px);
+	@include transition(background .3s ease);
+	&:hover {
+		background: url(../images/link_icon.png) no-repeat right 10px center $cta-hover;
+		background-size: 13px 13px;
+		color: $white;
+	}
+}
+
+.view_all {
+	float: right;
+	margin-top: -23px;
+	margin-right: 210px;
+}
+
+
 // Footer
 // ====================================================================
 footer {

@@ -18,6 +18,10 @@ block pageScript
         
 
 block content
-    p.projectLink
-        | <a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View this project on Pivotal tracker</a>
+    h2 #{project.name}
+
+    a.btn(href="https://www.pivotaltracker.com/s/projects/#{project.id}") View on Pivotal Tracker
+
+    a.view_all(href="../projects") View all projects
+
     div#chart
