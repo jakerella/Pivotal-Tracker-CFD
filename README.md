@@ -25,7 +25,7 @@ _NOTE: If your database already has these collections you could run into problem
 Assuming you have a verified [Heroku account](http://www.heroku.com/) and the [Heroku toolbelt](https://toolbelt.herokuapp.com/) installed:
 
 ```sh
-git clone git@github.com:jakerella/pt-flow.git
+git clone git@github.com:a2labs/Pivotal-Tracker-CFD.git
 cd pt-flow
 heroku apps:create [optional app name]
 heroku config:set NODE_ENV=[env name, e.g. "dev" or "production" (defaults to "production", use "dev" to enable expanded error reporting and the testing page for web hooks)]
