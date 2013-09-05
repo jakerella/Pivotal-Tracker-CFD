@@ -33,7 +33,7 @@ heroku config:set PT_TOKEN=[Pivotal Tracker API token]
 heroku config:set MONGO_DB_URL=[protocol][username:password@]{host name}[:port]{/database}
 heroku config:add BUILDPACK_URL=https://github.com/mbuchetics/heroku-buildpack-nodejs-grunt.git
 heroku labs:enable user-env-compile -a [app name]
-git push heroku [branch name (i.e. master)]
+git push heroku [local branch:]master
 ```
 
 You can get your API token at the bottom of your [Pivotal Tracker profile](https://www.pivotaltracker.com/profile) page. All of your `console.log()` statements will appear in the Heroku logs which you can view by running `heroku logs`. (Unless you have a [separate logger](https://devcenter.heroku.com/articles/logging) set up for your app, which you may want to do!) You may also want to review this guide to [Node.js on Heroku](https://devcenter.heroku.com/articles/nodejs).
