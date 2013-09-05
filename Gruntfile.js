@@ -95,7 +95,8 @@ module.exports = function(grunt) {
 
     grunt.registerTask( "dev", [ "clean", "jshint", "concat", "sass", "copy" ] );
     grunt.registerTask( "deploy", [ "clean", "concat", "sass", "copy" ] );
+    grunt.registerTask( "heroku:production", "deploy" );
 
-    grunt.registerTask( "default", [ "dev" ]);
+    grunt.registerTask( "default", [ "dev" ] );
 
 };

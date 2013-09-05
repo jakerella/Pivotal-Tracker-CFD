@@ -31,7 +31,9 @@ heroku apps:create [optional app name]
 heroku config:set NODE_ENV=[env name, e.g. "dev" or "production" (defaults to "production", use "dev" to enable expanded error reporting and the testing page for web hooks)]
 heroku config:set PT_TOKEN=[Pivotal Tracker API token]
 heroku config:set MONGO_DB_URL=[protocol][username:password@]{host name}[:port]{/database}
-git push heroku [local branch:]master
+heroku config:add BUILDPACK_URL=https://github.com/mbuchetics/heroku-buildpack-nodejs-grunt.git
+heroku labs:enable user-env-compile -a [app name]
+git push heroku [branch name (i.e. master)]
 ```
 
 You can get your API token at the bottom of your [Pivotal Tracker profile](https://www.pivotaltracker.com/profile) page. All of your `console.log()` statements will appear in the Heroku logs which you can view by running `heroku logs`. (Unless you have a [separate logger](https://devcenter.heroku.com/articles/logging) set up for your app, which you may want to do!) You may also want to review this guide to [Node.js on Heroku](https://devcenter.heroku.com/articles/nodejs).
@@ -59,7 +61,7 @@ You can run the Pivotal Tracker CFD app from just about any server. Here are the
     * NODE_ENV = [env name, e.g. "dev" or "production" (defaults to "production", use "dev" to enable expanded error reporting and the testing page for web hooks)]
     * PT_TOKEN = [Pivotal Tracker API token]
     * MONGO_DB_URL = [protocol][username:password@]{host name}[:port]{/database}
-7. Start the app with `node app/app.js`
+7. Start the app with `npm start` (or `node app/app.js`)
 
 Note that the app will listen on port `5000` by default!
 
