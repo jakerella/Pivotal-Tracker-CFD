@@ -50,7 +50,7 @@ You can run the Pivotal Tracker CFD app from just about any server. Here are the
 
 1. [Install git](http://git-scm.com)
 2. [Install Node](http://nodejs.org)
-3. Clone the app: `git clone git@github.com:jakerella/pt-flow.git`
+3. Clone the app: `git clone git@github.com:a2labs/Pivotal-Tracker-CFD.git`
 4. Navigate to the app directory and run `npm install` to install all dependencies
 5. Set up your database:
     * If you are using a local MongoDB instance, [install MongoDB](http://www.mongodb.org) and add a database
