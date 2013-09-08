@@ -8,10 +8,18 @@
     },
     "private": true,
     "scripts": {
-        "start": "node app/app",
+        "start": "node app/app.js",
         "test": "node_modules/mocha/bin/mocha -R tap"
     },
     "devDependencies": {
+        "grunt": "0.4.x",
+        "grunt-contrib-clean": "*",
+        "grunt-contrib-watch": "*",
+        "grunt-contrib-jshint": "*",
+        "grunt-contrib-copy": "*",
+        "grunt-contrib-concat": "*",
+        "grunt-sass": "0.6.x",
+        "matchdep": "0.1.x",
         "mocha": "~1.10.0"
     },
     "dependencies": {
