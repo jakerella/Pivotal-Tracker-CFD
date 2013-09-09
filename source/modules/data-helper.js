@@ -1,6 +1,8 @@
 
 var verifyPTActivity,
-    mongo = require("./mongo-helper.js");
+    e = require("./errors.js"),
+    mongo = require("./mongo-helper.js"),
+    https = require("https");
 
 exports.getUserProjects = function(dbScope, cb) {
     if (dbScope.isFunction()) { cb = dbScope; dbScope = {}; }
@@ -38,6 +40,51 @@ exports.getUserProjects = function(dbScope, cb) {
             });
         });
     });
+};
+
+/**
+ * Get all user info, note that this simple uses the pivotal tracker API token currently in use.
+ * NOTE: This uses the new v5 PT API - not the pivotal node module!
+ * 
+ * @param  {Function} cb Callback function with user data passed as the second argument (first argument will be null on success, Error otherwise)
+ * @return void
+ */
+exports.getCurrentUserInfo = function(cb) {
+    var req,
+        options = {
+            headers: {
+                "X-TrackerToken": pivotal.token,
+                "Accept": "application/json",
+                "Host": "www.pivotaltracker.com",
+                "Connection": "keep-alive",
+                "Content-Length": 0
+            },
+            host: "www.pivotaltracker.com",
+            path: "/services/v5/me",
+            method: "GET"
+        };
+
+    req = https.request(options, function (res) {
+        var content = "";
+
+        res.on("data", function (chunk) {
+            content += chunk;
+        });
+
+        res.on("end", function(){
+            if (this.statusCode !== 200) {
+                cb(new e.HttpError("Pivotal Tracker API returned an HTTP error (" + this.statusCode + "): " + content, 500), null);
+            }
+
+            cb(null, JSON.parse(content));
+        });
+    });
+
+    req.on("error", function(e) {
+        cb(new e.HttpError(e.message, 500), null);
+    });
+
+    req.end();
 };
 
 
