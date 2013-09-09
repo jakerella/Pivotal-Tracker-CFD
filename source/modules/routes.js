@@ -329,7 +329,7 @@ renderProjectEditPage = function(res, next, project) {
         return;
     }
 
-    authenticateOwner(function(err) {
+    authenticateOwner(project, function(err) {
         if (err) { next(err); return; }
 
         res.render("edit", {
@@ -364,7 +364,7 @@ doStatsUpdate = function(res, next, project, statsUpdate) {
 
     console.log("Stats document being saved by "+pivotal.token, statsUpdate);
 
-    authenticateOwner(function(err) {
+    authenticateOwner(project, function(err) {
         if (err) { next(err); return; }
 
         mongo.getOrCreateStats(
@@ -406,44 +406,33 @@ doStatsUpdate = function(res, next, project, statsUpdate) {
     });
 };
 
-authenticateOwner = function(cb) {
+authenticateOwner = function(project, cb) {
+    if (!project || !project.id) {
+        cb(new e.AuthError("Please provide a project to owner authentication for."));
+        return;
+    }
 
-    // TODO: we need to figure out how we can do this...
+    data.getCurrentUserInfo(function(err, data) {
+        var i, l;
 
-    cb(null, {});
+        if (err) {
+            console.error("Error getting user data (" + err.code + "): ", err.message);
+            cb(new e.AuthError("Unable to authenticate user as an owner."), 500);
+            return;
 
+        } else {
+            for (i=0, l = data.projects.length; i<l; ++i) {
+                if (Number(data.projects[i].project_id) === Number(project.id) && 
+                    data.projects[i].role === "owner") {
+                    
+                    cb(null);
+                    return;
+                }
+            }
 
-    // var username = "jordankasper";
-    // var password = "";
-
-    // console.log("Authenticating user ("+username+") for editing project "+req.params.id);
-    
-    // pivotal.getToken(username, password, function(err, user){
-    //     if(err){
-    //         next(new e.AuthError(
-    //             ((err.code && err.code == 401) ? "Sorry, but your authentication failed, that may not be a valid Pivotal Tracker username and password!" : err.desc),
-    //             (err.code || 401)
-    //         ));
-    //         return;
-    //     }
-
-    //     if (user.guid != pivotal.token) {
-    //         next(new e.AuthError("Sorry, but that username doesn't match the token you are using!"));
-    //         return;
-    //     }
-
-    //     pivotal.getMemberships(req.params.id, function(err, member) {
-    //         if (err) {
-    //             next(new e.AuthError(
-    //                 ((err.code && err.code == 401) ? "Sorry, but your authentication failed, you may not be a member of this project!" : err.desc),
-    //                 (err.code || 401)
-    //             ));
-    //             return;
-    //         }
-
-    //         console.log("got membership data: ", member);
-
-    //     });
-    // });
+            cb(new e.AuthError("User is not an owner."), 401);
+            return;
+        }
+    });
 
 };
