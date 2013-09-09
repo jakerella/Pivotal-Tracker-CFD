@@ -1,11 +1,11 @@
 console.log("Starting pt-flow server");
 
 require("./modules/helpers.js"); // no return
-var     express = require("express"),
-           http = require("http"),
-      xmlParser = require("./modules/xml-parser.js"),
-         routes = require("./modules/routes.js"),
-          mongo = require("./modules/mongo-helper.js");
+var express = require("express"),
+    http = require("http"),
+    xmlParser = require("./modules/xml-parser.js"),
+    routes = require("./modules/routes.js"),
+    mongo = require("./modules/mongo-helper.js");
 
 // Set to global so we can call useToken once (below)
 global.pivotal = require("pivotal");
@@ -14,7 +14,7 @@ var app = express();
 
 // Config and middleware
 app.configure(function () {
-    process.env["NODE_ENV"] = (process.env["NODE_ENV"] || "production");
+    process.env.NODE_ENV = (process.env.NODE_ENV || "production");
     app.testEnvs = ["dev", "development", "test", "testing", "qa"];
 
     app.set("port", process.env.PORT || 5000);
@@ -40,14 +40,14 @@ app.configure("production", function () {
 
 
 // Pivotal Tracker API token
-if (!process.env["PT_TOKEN"] || !process.env["PT_TOKEN"].length) {
-    throw Error("No Pivotal Tracker token is set in the env var: \"PT_TOKEN\". This is required to process activity web hooks!");
+if (!process.env.PT_TOKEN || !process.env.PT_TOKEN.length) {
+    throw new Error("No Pivotal Tracker token is set in the env var: \"PT_TOKEN\". This is required to process activity web hooks!");
 }
 
 // Mongo DB connection info
-var mongoInfo = mongo.parseConnectionURI(process.env["MONGO_DB_URL"]);
+var mongoInfo = mongo.parseConnectionURI(process.env.MONGO_DB_URL);
 if (!mongoInfo) {
-    throw Error("Either no MongoDB connection URL was provided or it was invalid. Please place one in an environment variable (\"MONGO_DB_URL\") with the format: [protocol][username:password@]host[:port]/database");
+    throw new Error("Either no MongoDB connection URL was provided or it was invalid. Please place one in an environment variable (\"MONGO_DB_URL\") with the format: [protocol][username:password@]host[:port]/database");
 }
 
 
@@ -56,7 +56,7 @@ app.get("/", routes.index);
 app.get("/projects", routes.hasToken, routes.listProjects);
 app.get("/project/:id", routes.hasToken, routes.viewProject);
 app.get("/project/:id/edit", routes.hasToken, routes.editProject);
-if (app.testEnvs.indexOf(process.env["NODE_ENV"]) > -1) {
+if (app.testEnvs.indexOf(process.env.NODE_ENV) > -1) {
     //pivotal.debug = true;
     app.get("/test-hook", routes.showHookText);
 }
@@ -69,5 +69,5 @@ app.post("/activity-hook", routes.processActivityHook);
 
 
 http.createServer(app).listen(app.get("port"), function () {
-  console.log("pt-cfd server listening on port " + app.get("port"));
+    console.log("pt-cfd server listening on port " + app.get("port"));
 });

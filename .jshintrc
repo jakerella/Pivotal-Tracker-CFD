@@ -2,11 +2,10 @@
     "globals": {
         "jQuery": true,
         "PTCFD": true,
-        "console": true,
-        "exports": true,
-        "module": true,
-        "$": true
+        "$": true,
+        "pivotal": true
     },
+    "node": true,
     "curly": true,
     "eqeqeq": true,
     "immed": true,

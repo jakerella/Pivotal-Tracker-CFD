@@ -1,13 +1,14 @@
 // Helper functions for managing MongoDB
 
-var           e = require("./errors.js"),
-          mongo = require("mongodb");
-         Server = mongo.Server,
-             Db = mongo.Db,
+var doConnect,
+    e = require("./errors.js"),
+    mongo = require("mongodb"),
+    Server = mongo.Server,
+    Db = mongo.Db,
     connectInfo = null;
 
 // constants
-var CONNECT_TIMEOUT  = 2000; // for multiple simultaneous connections
+var CONNECT_TIMEOUT  = 2000, // for multiple simultaneous connections
     CONNECT_INTERVAL = 100;  // for multiple simultaneous connections
 
 
@@ -28,8 +29,8 @@ exports.parseConnectionURI = function(uri) {
             "port": (m[4] || 45027),
             "user": (m[1] || null),
             "pass": (m[2] || null),
-              "db": m[5],
-             "uri": uri
+            "db": m[5],
+            "uri": uri
         };
     }
 
@@ -106,8 +107,8 @@ exports.getOrCreateStory = function(story, dbScope, cb) {
 
                     coll.insert(
                         {
-                               "project": Number(story.project_id),
-                                 "story": Number(story.id),
+                            "project": Number(story.project_id),
+                            "story": Number(story.id),
                             "current_state": story.current_state
                         },
                         function(err, recs) {
@@ -159,14 +160,14 @@ exports.getOrCreateStats = function(project, date, dbScope, cb) {
                             
                             coll.insert({
 
-                                    "project": Number(project),
-                                       "date": date,
+                                "project": Number(project),
+                                "date": date,
                                 "unscheduled": recs[0].unscheduled,
-                                  "unstarted": recs[0].unstarted,
-                                    "started": recs[0].started,
-                                   "finished": recs[0].finished,
-                                  "delivered": recs[0].delivered,
-                                   "accepted": recs[0].accepted
+                                "unstarted": recs[0].unstarted,
+                                "started": recs[0].started,
+                                "finished": recs[0].finished,
+                                "delivered": recs[0].delivered,
+                                "accepted": recs[0].accepted
 
                             }, function(err, rec) {
                                 if (err) { cb(err, null); return; }
@@ -181,14 +182,14 @@ exports.getOrCreateStats = function(project, date, dbScope, cb) {
                             console.log("No previous stats document exists for "+project+", starting fresh at "+date);
                             coll.insert({
 
-                                 "project": Number(project),
-                                    "date": date,
+                                "project": Number(project),
+                                "date": date,
                                 "unscheduled": 0,
-                                  "unstarted": 0,
-                                    "started": 0,
-                                   "finished": 0,
-                                  "delivered": 0,
-                                   "accepted": 0
+                                "unstarted": 0,
+                                "started": 0,
+                                "finished": 0,
+                                "delivered": 0,
+                                "accepted": 0
 
                             }, function(err, rec) {
                                 if (err) { cb(err, null); return; }
@@ -209,7 +210,7 @@ exports.getOrCreateStats = function(project, date, dbScope, cb) {
 // -------------- Private Module Functions --------------- //
 
 // internal use only
-var doConnect = function(scope, cb) {
+doConnect = function(scope, cb) {
     var dbi;
 
     if (scope) {

@@ -1,5 +1,5 @@
 
-var     e = require("./errors.js"),
+var verifyPTActivity,
     mongo = require("./mongo-helper.js");
 
 exports.getUserProjects = function(dbScope, cb) {
@@ -79,7 +79,7 @@ exports.processStoryUpdate = function(activity, storyUpdate, scope, cb) {
 
     var actTime = new Date(activity.occurred_at);
 
-    verifyPTActivity(activity, function(err, data) {
+    verifyPTActivity(activity, function(err) {
         if (err) { cb(err); return; }
 
         console.log("Validity of activity verified!");
@@ -99,8 +99,8 @@ exports.processStoryUpdate = function(activity, storyUpdate, scope, cb) {
 
             mongo.getOrCreateStory(
                 {
-                       project_id: story.project_id,
-                               id: story.id,
+                    project_id: story.project_id,
+                    id: story.id,
                     current_state: storyUpdate.current_state
                 },
                 scope,
@@ -108,9 +108,9 @@ exports.processStoryUpdate = function(activity, storyUpdate, scope, cb) {
                     if (err) { cb(err); return; }
 
                     var prevStatus = local.current_state,
-                                 m = actTime.getMonth() + 1,
-                                 d = actTime.getDate(),
-                           actCymd = actTime.getFullYear()+"-"+((m > 9)?m:"0"+m)+"-"+((d > 9)?d:"0"+d);
+                        m = actTime.getMonth() + 1,
+                        d = actTime.getDate(),
+                        actCymd = actTime.getFullYear()+"-"+((m > 9)?m:"0"+m)+"-"+((d > 9)?d:"0"+d);
                     
                     mongo.getOrCreateStats(
                         activity.project_id, 
@@ -121,13 +121,13 @@ exports.processStoryUpdate = function(activity, storyUpdate, scope, cb) {
 
                             // update the stats and story documents
                             
-                            if (prevStatus != storyUpdate.current_state && stats[prevStatus]) {
+                            if (prevStatus !== storyUpdate.current_state && stats[prevStatus]) {
                                 // only update previous state count if we're tracking it
                                 // and no negatives!
                                 stats[prevStatus] = Math.max(0, stats[prevStatus] - 1);
                             }
                             // increment the new state, again only if we're tracking it
-                            if (typeof stats[storyUpdate.current_state] != "undefined") {
+                            if (typeof stats[storyUpdate.current_state] !== "undefined") {
                                 stats[storyUpdate.current_state]++;
                             }
                             // set the new state in our local DB object
@@ -148,7 +148,8 @@ exports.processStoryUpdate = function(activity, storyUpdate, scope, cb) {
                                         mongo.getOrCreateCollection(db, "story", function(err, coll) {
                                             if (err) {
                                                 console.error("The stats document was updated but there was an error updating the story!", local, actCymd);
-                                                cb(err, null); return;
+                                                cb(err, null);
+                                                return;
                                             }
 
                                             // update the story status in our DB
@@ -180,7 +181,7 @@ exports.processStoryUpdate = function(activity, storyUpdate, scope, cb) {
 
 // ------------- Private Helpers ------------ //
 
-var verifyPTActivity = function(activity, cb) {
+verifyPTActivity = function(activity, cb) {
     cb = (cb && cb.isFunction()) ? cb : function() {};
 
     pivotal.getActivities({
@@ -206,11 +207,11 @@ var verifyPTActivity = function(activity, cb) {
                 }
             }
             console.error("Data returned by PT API wrapper for this activity does not match (ID: "+activity.id+")", data);
-            cb(Error("Invalid activity provided to POST web hook"), null);
+            cb(new Error("Invalid activity provided to POST web hook"), null);
 
         } else {
             console.error("Invalid activity data returned by PT API", data);
-            cb(Error("Invalid activity data returned by PT API"), null);
+            cb(new Error("Invalid activity data returned by PT API"), null);
         }
         return;
     });

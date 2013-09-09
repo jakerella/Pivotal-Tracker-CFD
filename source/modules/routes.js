@@ -1,6 +1,7 @@
 
-var     e = require("./errors.js"),
-     data = require("./data-helper.js"),
+var renderProjectsPage, renderProjectPage, renderProjectEditPage, doStatsUpdate, authenticateOwner,
+    e = require("./errors.js"),
+    data = require("./data-helper.js"),
     mongo = require("./mongo-helper.js");
 
 var PIVOTAL_TOKEN_COOKIE = "ptcfd_token";
@@ -18,17 +19,17 @@ exports.hasToken = function (req, res, next) {
     }
 };
 
-exports.index = function(req, res, next) {
+exports.index = function(req, res) {
     if (req.cookies[PIVOTAL_TOKEN_COOKIE]) {
         res.redirect("/projects");
         return;
     }
 
-    res.render('index', { title: "PT Cumulative Flow Diagram - Login", page: "login" });
+    res.render("index", { title: "PT Cumulative Flow Diagram - Login", page: "login" });
 };
 
-exports.showHookText = function(req, res, next) {
-    res.render('test-hook', { title: "PT Cumulative Flow Diagram - Test Hook", page: "test-hook" });
+exports.showHookText = function(req, res) {
+    res.render("test-hook", { title: "PT Cumulative Flow Diagram - Test Hook", page: "test-hook" });
 };
 
 exports.getProjects = function(req, res, next) {
@@ -48,7 +49,7 @@ exports.getProjects = function(req, res, next) {
         if (err) {
             if (err.code) {
                 next(new e.BadRequestError(
-                    ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
+                    ((err.code === 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                     err.code
                 ));
             } else {
@@ -83,7 +84,7 @@ exports.listProjects = function(req, res, next) {
             if (err) {
                 if (err.code) {
                     next(new e.BadRequestError(
-                        ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
+                        ((err.code === 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                         err.code
                     ));
                 } else {
@@ -106,7 +107,7 @@ exports.viewProject = function(req, res, next) {
         
         if (req.session.projects) {
             for (i in req.session.projects) {
-                if (req.session.projects[i].id == req.params.id) {
+                if (req.session.projects[i].id === req.params.id) {
                     project = req.session.projects[i];
                 }
             }
@@ -123,7 +124,7 @@ exports.viewProject = function(req, res, next) {
             if (err) {
                 if (err.code) {
                     next(new e.BadRequestError(
-                        ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
+                        ((err.code === 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                         err.code
                     ));
                 } else {
@@ -135,7 +136,7 @@ exports.viewProject = function(req, res, next) {
             req.session.projects = projects;
 
             for (var i in req.session.projects) {
-                if (req.session.projects[i].id == req.params.id) {
+                if (req.session.projects[i].id === req.params.id) {
                     project = req.session.projects[i];
                 }
             }
@@ -152,7 +153,7 @@ exports.editProject = function(req, res, next) {
     if (req.session.projects) {
         if (req.session.projects) {
             for (i in req.session.projects) {
-                if (req.session.projects[i].id == req.params.id) {
+                if (req.session.projects[i].id === req.params.id) {
                     project = req.session.projects[i];
                 }
             }
@@ -169,7 +170,7 @@ exports.editProject = function(req, res, next) {
             if (err) {
                 if (err.code) {
                     next(new e.BadRequestError(
-                        ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
+                        ((err.code === 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                         err.code
                     ));
                 } else {
@@ -181,7 +182,7 @@ exports.editProject = function(req, res, next) {
             req.session.projects = projects;
 
             for (var i in req.session.projects) {
-                if (req.session.projects[i].id == req.params.id) {
+                if (req.session.projects[i].id === req.params.id) {
                     project = req.session.projects[i];
                 }
             }
@@ -198,7 +199,7 @@ exports.updateStats = function(req, res, next) {
     if (req.session.projects) {
         if (req.session.projects) {
             for (i in req.session.projects) {
-                if (req.session.projects[i].id == req.params.id) {
+                if (req.session.projects[i].id === req.params.id) {
                     project = req.session.projects[i];
                 }
             }
@@ -215,7 +216,7 @@ exports.updateStats = function(req, res, next) {
             if (err) {
                 if (err.code) {
                     next(new e.BadRequestError(
-                        ((err.code == 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
+                        ((err.code === 401)?"Sorry, but that is not a valid Pivotal Tracker API token!":err.desc),
                         err.code
                     ));
                 } else {
@@ -227,7 +228,7 @@ exports.updateStats = function(req, res, next) {
             req.session.projects = projects;
 
             for (var i in req.session.projects) {
-                if (req.session.projects[i].id == req.params.id) {
+                if (req.session.projects[i].id === req.params.id) {
                     project = req.session.projects[i];
                 }
             }
@@ -256,8 +257,8 @@ exports.processActivityHook = function(req, res, next) {
     // if we don't have a PT_TOKEN, we'll need to use the system one
     // NOTE: we only do this for this action (not for the end user UI)
     if (!pivotal.token) {
-        console.log("No token assigned yet, using system token: "+process.env["PT_TOKEN"]);
-        pivotal.useToken(process.env["PT_TOKEN"]);
+        console.log("No token assigned yet, using system token: " + process.env.PT_TOKEN);
+        pivotal.useToken(process.env.PT_TOKEN);
     }
 
     // get number of story updates first
@@ -266,7 +267,7 @@ exports.processActivityHook = function(req, res, next) {
     // now process each update
     activity.stories.each(function(storyUpdate) {
         console.log("processing story update activity ID: "+activity.id+" on story ID: "+storyUpdate.id);
-        data.processStoryUpdate(activity, storyUpdate, req, function(err, data) {
+        data.processStoryUpdate(activity, storyUpdate, req, function(err) {
             if (err) {
                 console.error("ERROR processing story "+storyUpdate.id+": ", err.toString());
                 errors.push(err.toString());
@@ -292,15 +293,15 @@ exports.processActivityHook = function(req, res, next) {
 
 // ------------- Private helpers ------------- //
 
-var renderProjectsPage = function(res, next, projects) {
-    res.render('projects', {
+renderProjectsPage = function(res, next, projects) {
+    res.render("projects", {
         title: "PT Cumulative Flow Diagram - Projects",
         page: "projects",
         projects: projects
     });
 };
 
-var renderProjectPage = function(res, next, project) {
+renderProjectPage = function(res, next, project) {
     if (!project || !project.id) {
         next(new e.BadRequestError("Sorry, but either that project does not exist in this system, or you do not have access to it!", 404));
         return;
@@ -313,7 +314,7 @@ var renderProjectPage = function(res, next, project) {
             return;
         }
 
-        res.render('project', {
+        res.render("project", {
             title: "PT Cumulative Flow Diagram - "+project.name,
             page: "project",
             project: project,
@@ -322,16 +323,16 @@ var renderProjectPage = function(res, next, project) {
     });
 };
 
-var renderProjectEditPage = function(res, next, project) {
+renderProjectEditPage = function(res, next, project) {
     if (!project || !project.id) {
         next(new e.BadRequestError("Sorry, but either that project does not exist in this system, or you do not have access to it!", 404));
         return;
     }
 
-    authenticateOwner(function(err, owner) {
+    authenticateOwner(function(err) {
         if (err) { next(err); return; }
 
-        res.render('edit', {
+        res.render("edit", {
             title: "PT Cumulative Flow Diagram - Edit "+project.name,
             page: "edit-project",
             project: project
@@ -339,7 +340,7 @@ var renderProjectEditPage = function(res, next, project) {
     });
 };
 
-var doStatsUpdate = function(res, next, project, statsUpdate) {
+doStatsUpdate = function(res, next, project, statsUpdate) {
     if (!project || !project.id) {
         next(new e.BadRequestError("Sorry, but either that project does not exist in this system, or you do not have access to it!", 404));
         return;
@@ -351,7 +352,7 @@ var doStatsUpdate = function(res, next, project, statsUpdate) {
     }
 
     statsUpdate.project = Number(statsUpdate.project);
-    if (!statsUpdate.project || statsUpdate.project != project.id) {
+    if (!statsUpdate.project || statsUpdate.project !== project.id) {
         next(new e.BadRequestError("Sorry, but your stats update ID does not match your update URL!", 400));
         return;
     }
@@ -363,7 +364,7 @@ var doStatsUpdate = function(res, next, project, statsUpdate) {
 
     console.log("Stats document being saved by "+pivotal.token, statsUpdate);
 
-    authenticateOwner(function(err, owner) {
+    authenticateOwner(function(err) {
         if (err) { next(err); return; }
 
         mongo.getOrCreateStats(
@@ -375,8 +376,8 @@ var doStatsUpdate = function(res, next, project, statsUpdate) {
 
                 // merge in the stats updates
                 for (var k in statsUpdate) {
-                    if (k != "project" && 
-                        k != "date" &&
+                    if (k !== "project" && 
+                        k !== "date" &&
                         statsUpdate.hasOwnProperty(k)) {
                         stats[k] = Number(statsUpdate[k]);
                     }
@@ -405,7 +406,7 @@ var doStatsUpdate = function(res, next, project, statsUpdate) {
     });
 };
 
-var authenticateOwner = function(cb) {
+authenticateOwner = function(cb) {
 
     // TODO: we need to figure out how we can do this...
 

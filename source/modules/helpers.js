@@ -2,7 +2,7 @@
 // object helpers
 Object.defineProperty(
     Object.prototype, 
-    'isFunction',
+    "isFunction",
     {
         writable : false,
         enumerable : false, 
@@ -15,7 +15,7 @@ Object.defineProperty(
 // object key iterator (operates just like Array.forEach)
 Object.defineProperty(
     Object.prototype, 
-    'each',
+    "each",
     {
         writable : false,
         enumerable : false, 

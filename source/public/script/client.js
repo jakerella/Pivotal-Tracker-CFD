@@ -158,7 +158,7 @@
             });
     };
 
-    var _doAddStatsTooltip = function(e, pos, item) {
+    var _doAddStatsTooltip = function(e, pos) {
         app.hoverTO = null;
 
         var i, x, l, m, y, d, p1, p2, xTime,
@@ -206,7 +206,7 @@
 
         d = new Date(xTime);
         for (l in series) {
-            if (l === "Started" || l == "Finished") {
+            if (l === "Started" || l === "Finished") {
                 wip += series[l];
             }
         }
@@ -222,7 +222,7 @@
     };
 
     app.updateStats = function(data, cb) {
-        cb = ($.isFunction(cb))? cb : (function() {});
+        cb = ($.isFunction(cb))? cb : function() {};
         console.log("Updating stats with: ", data);
 
         // do the update ajax call
@@ -311,8 +311,10 @@
         app.alert(msg, "error", (to || -1));
     };
     app.clearMessages = function(cb) {
+        var msg = app.messageNode.find(".message");
+        
         cb = (cb || function() {});
-        msg = app.messageNode.find(".message");
+        
         if (msg.length) {
             app.messageNode.slideUp(function() {
                 msg.remove().end().slideDown(50, function() { cb(); });

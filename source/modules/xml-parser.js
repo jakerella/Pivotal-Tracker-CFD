@@ -1,12 +1,11 @@
 
-var utils = require('../../node_modules/express/node_modules/connect/lib/utils');
-var xml2js = require('xml2js');
-
-var parser = new xml2js.Parser({
-    explicitArray : false,
-    ignoreAttrs   : true,
-    explicitRoot  : false
-});
+var utils = require('../../node_modules/express/node_modules/connect/lib/utils'),
+    xml2js = require('xml2js'),
+    parser = new xml2js.Parser({
+        explicitArray : false,
+        ignoreAttrs   : true,
+        explicitRoot  : false
+    });
 
 module.exports = function (request, response, next) {
     if (request._body) {
