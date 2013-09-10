@@ -4,7 +4,8 @@ var renderProjectsPage, renderProjectPage, renderProjectEditPage, doStatsUpdate,
     data = require("./data-helper.js"),
     mongo = require("./mongo-helper.js");
 
-var PIVOTAL_TOKEN_COOKIE = "ptcfd_token";
+var PIVOTAL_TOKEN_COOKIE = "ptcfd_token",
+    appName = "PT Cumulative Flow Diagram";
 
 // This is our "auth" check for pages behind the token
 exports.hasToken = function (req, res, next) {
@@ -25,11 +26,11 @@ exports.index = function(req, res) {
         return;
     }
 
-    res.render("index", { title: "PT Cumulative Flow Diagram - Login", page: "login" });
+    res.render("index", { title: appName + " - Login", page: "login" });
 };
 
 exports.showHookText = function(req, res) {
-    res.render("test-hook", { title: "PT Cumulative Flow Diagram - Test Hook", page: "test-hook" });
+    res.render("test-hook", { title: appName + " - Test Hook", page: "test-hook" });
 };
 
 exports.getProjects = function(req, res, next) {
@@ -295,7 +296,7 @@ exports.processActivityHook = function(req, res, next) {
 
 renderProjectsPage = function(res, next, projects) {
     res.render("projects", {
-        title: "PT Cumulative Flow Diagram - Projects",
+        title: appName + " - Projects",
         page: "projects",
         projects: projects
     });
@@ -315,7 +316,7 @@ renderProjectPage = function(res, next, project) {
         }
 
         res.render("project", {
-            title: "PT Cumulative Flow Diagram - "+project.name,
+            title: appName + " - "+project.name,
             page: "project",
             project: project,
             stats: JSON.stringify(stats)
@@ -333,7 +334,7 @@ renderProjectEditPage = function(res, next, project) {
         if (err) { next(err); return; }
 
         res.render("edit", {
-            title: "PT Cumulative Flow Diagram - Edit "+project.name,
+            title: appName + " - Edit "+project.name,
             page: "edit-project",
             project: project
         });
