@@ -5,7 +5,7 @@ var renderProjectsPage, renderProjectPage, renderProjectEditPage, doStatsUpdate,
     mongo = require("./mongo-helper.js");
 
 var PIVOTAL_TOKEN_COOKIE = "ptcfd_token",
-    appName = "PT Cumulative Flow Diagram";
+    appName = "Pivotal Tracker Cumulative Flow Diagram";
 
 // This is our "auth" check for pages behind the token
 exports.hasToken = function (req, res, next) {
@@ -26,7 +26,8 @@ exports.index = function(req, res) {
         return;
     }
 
-    res.render("index", { title: appName + " - Login", page: "login" });
+    //res.render("index", { title: appName + " - Login", page: "login" });
+    res.render("index", { title: appName, page: "login" });
 };
 
 exports.showHookText = function(req, res) {
@@ -45,7 +46,7 @@ exports.getProjects = function(req, res, next) {
     req.session.projects = [];
 
     pivotal.useToken(req.body.token);
-    
+
     data.getUserProjects(req, function(err, projects) {
         if (err) {
             if (err.code) {
@@ -72,7 +73,7 @@ exports.getProjects = function(req, res, next) {
 
 exports.listProjects = function(req, res, next) {
     if (req.session.projects) {
-        
+
         renderProjectsPage(res, next, req.session.projects);
         return;
 
@@ -80,7 +81,7 @@ exports.listProjects = function(req, res, next) {
         // We don't have projects, so go get them
         // NOTE: the token must be present already (and in pivotal module)
         //       based on the "hasToken()" middleware used in the routing in app.js
-        
+
         data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
@@ -105,7 +106,7 @@ exports.viewProject = function(req, res, next) {
     var i, project = null;
 
     if (req.session.projects) {
-        
+
         if (req.session.projects) {
             for (i in req.session.projects) {
                 if (req.session.projects[i].id === req.params.id) {
@@ -113,14 +114,14 @@ exports.viewProject = function(req, res, next) {
                 }
             }
         }
-        
+
         renderProjectPage(res, next, project);
         return;
 
     } else {
         // NOTE: the token must be present already (and in pivotal module)
         //       based on the "hasToken()" middleware used in the routing in app.js
-        
+
         data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
@@ -166,7 +167,7 @@ exports.editProject = function(req, res, next) {
     } else {
         // NOTE: the token must be present already (and in pivotal module)
         //       based on the "hasToken()" middleware used in the routing in app.js
-        
+
         data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
@@ -212,7 +213,7 @@ exports.updateStats = function(req, res, next) {
     } else {
         // NOTE: the token must be present already (and in pivotal module)
         //       based on the "hasToken()" middleware used in the routing in app.js
-        
+
         data.getUserProjects(req, function(err, projects) {
             if (err) {
                 if (err.code) {
@@ -296,7 +297,7 @@ exports.processActivityHook = function(req, res, next) {
 
 renderProjectsPage = function(res, next, projects) {
     res.render("projects", {
-        title: appName + " - Projects",
+        title: appName,
         page: "projects",
         projects: projects
     });
@@ -316,7 +317,8 @@ renderProjectPage = function(res, next, project) {
         }
 
         res.render("project", {
-            title: appName + " - "+project.name,
+            //title: appName + " - "+project.name,
+            title: appName,
             page: "project",
             project: project,
             stats: JSON.stringify(stats)
@@ -377,7 +379,7 @@ doStatsUpdate = function(res, next, project, statsUpdate) {
 
                 // merge in the stats updates
                 for (var k in statsUpdate) {
-                    if (k !== "project" && 
+                    if (k !== "project" &&
                         k !== "date" &&
                         statsUpdate.hasOwnProperty(k)) {
                         stats[k] = Number(statsUpdate[k]);
@@ -394,7 +396,7 @@ doStatsUpdate = function(res, next, project, statsUpdate) {
                         // update the statistics for this date in our DB
                         coll.update({_id: stats._id}, stats, {safe: true}, function(err) {
                             if (err) { next(err); return; }
-                            
+
                             console.log("Stats document update", stats);
 
                             res.writeHead(200, {"Content-Type": "application/json"});
@@ -423,9 +425,9 @@ authenticateOwner = function(project, cb) {
 
         } else {
             for (i=0, l = data.projects.length; i<l; ++i) {
-                if (Number(data.projects[i].project_id) === Number(project.id) && 
+                if (Number(data.projects[i].project_id) === Number(project.id) &&
                     data.projects[i].role === "owner") {
-                    
+
                     cb(null);
                     return;
                 }

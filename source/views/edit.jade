@@ -35,29 +35,33 @@ block pageScript
         if ((new Date()).toJSON) {
             $("[name=date]").val((new Date()).toJSON().substr(0,10));
         }
-        
+
 
 block content
-    p.intro
-        | This is the administrative interface for The PT CFD UI. Here you can tweak 
-        | certain things for this project.<br />
-        | <a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View this project on Pivotal tracker</a><br />
-        | <a href="/project/#{project.id}">Go to the chart</a>
+    div.projectMenu-edit
+        | <a class="btn-rounded left" href="/project/#{project.id}">Back to Chart</a>
+        | <p>Editing Project:</p>
+        | <h2><span class="block"></span>#{project.name}<span class="block"></span></h2>
+        | <a class="btn-rounded" href="https://www.pivotaltracker.com/s/projects/#{project.id}">View in PT</a>
+
+    p.instructions
+        | Set data for a specific date:
+
+    p.hint
+        | Note that this will update data on the specified date.<br>Any values not provided will retain their original values.
 
     form(id="update-stats", action="", method="POST")
-        p Set data for a given date...
         div
             label(for="stats-date") Date:
             input(type="date", id="stats-date", name="date", value="", placeholder="YYYY-MM-DD")
         div
             label(for="stats=-values") Stats:
             input(type="text", id="stats-values", name="stats", placeholder='Stats (i.e. "started: 2, unstarted: 34")')
-        p.fine
-            | Please enter the stats in the form:<br />
-            | [stat]: [value], ...<br />
-            | Also note that this will UPDATE data on a given date, thus 
-            | any values not provided will retain their original values.
-        div
+        p.hint
+            | (Please enter stats in the form [stat]: [value])
+
+        div.submit-group
             input(type="hidden", name="project", value="#{project.id}")
-            input(type="submit", value="Save")
+            input.btn-large(type="submit", value="Save")
             img(src="/images/ajax-loader.gif", alt="Working...", class="loading")
+            | <a class="cancel" href="/project/#{project.id}">Cancel</a>

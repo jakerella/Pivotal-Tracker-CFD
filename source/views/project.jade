@@ -7,9 +7,12 @@ block pageScript
 
     script
         PTCFD.showChart({ node: "#chart" });
-        
+
 
 block content
-    p.projectLink
-        | <a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View this project on Pivotal tracker</a>
+    div.projectMenu
+        | <a class="btn-rounded left" href="/projects">All Projects</a>
+        | <h2><span class="block"></span>#{project.name}<span class="block"></span></h2>
+        | <a class="btn-rounded" href="https://www.pivotaltracker.com/s/projects/#{project.id}">View in PT</a>
+
     div#chart
