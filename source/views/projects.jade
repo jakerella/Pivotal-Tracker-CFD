@@ -1,11 +1,13 @@
 extend layout
 
 block content
-    p.intro 
-        | These are all of the projects you can access in this system:
+    h2.page-title
+        | <span class="block"></span>Projects<span class="block"></span>
 
-    ul
+    p.intro
+        | Here are all of the projects that you currently have access to.
+
+    ul.projects-list
         - each project in projects
-            li 
-                | <a href="/project/#{project.id}">#{project.name}</a> (<a href="https://www.pivotaltracker.com/s/projects/#{project.id}">View on PT</a>)
-    
+            li
+                | <a class="btn-large" href="/project/#{project.id}">#{project.name}</a><a class="btn-rounded" href="https://www.pivotaltracker.com/s/projects/#{project.id}">View in PT</a>

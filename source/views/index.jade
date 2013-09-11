@@ -1,17 +1,20 @@
 extend layout
 
 block pageScript
-    script
+    script.
         PTCFD.initLoginForm("#login");
 
 block content
-    p.intro 
-        | You will need to enter a valid Pivotal Tracker API token to use 
-        | this site. You can find yours at the bottom of your 
-        | <a href="https://www.pivotaltracker.com/profile">Pivotal Tracker profile</a> 
-        | page.
+    h2.page-title
+        | Login
+
+    p.intro
+        | Enter your valid Pivotal Tracker API token below.
 
     form#login(action="", method="POST")
         input#pivotalToken(type="text", placeholder="pivotal tracker token")
         input#doLogin(type="submit", value="Login")
         img(src="/images/ajax-loader.gif", alt="Working...", class="loading")
+
+    p.hint
+        | (Psst! Don?t have a token? Find yours at the bottom of your <a href="https://www.pivotaltracker.com/profile">Pivotal Tracker profile</a>.)
