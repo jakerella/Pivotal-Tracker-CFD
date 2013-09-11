@@ -13,6 +13,12 @@ module.exports = function(grunt) {
                 cwd: "source/public/",
                 dest: "app/public/"
             },
+            fonts: {
+                expand: true,
+                src: [ "fonts/**/*.*" ],
+                cwd: "source/public/",
+                dest: "app/public/"
+            },
             serverjs: {
                 expand: true,
                 src: [ "modules/**/*.js", "app.js" ],
