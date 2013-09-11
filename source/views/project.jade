@@ -10,8 +10,9 @@ block pageScript
 
 
 block content
-    p.projectLinks
+    div.projectMenu
         | <a class="btn-rounded left" href="/projects">All Projects</a>
+        | <h2><span class="block"></span>#{project.name}<span class="block"></span></h2>
         | <a class="btn-rounded" href="https://www.pivotaltracker.com/s/projects/#{project.id}">View in PT</a>
 
     div#chart

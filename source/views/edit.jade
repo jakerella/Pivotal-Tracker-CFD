@@ -38,9 +38,11 @@ block pageScript
 
 
 block content
-    p.projectLinks
+    div.projectMenu-edit
         | <a class="btn-rounded left" href="/project/#{project.id}">Back to Chart</a>
-        | <a class="btn-rounded" href="https://www.pivotaltracker.com/s/projects/#{project.id}">View in PT</a><br />
+        | <p>Editing Project:</p>
+        | <h2><span class="block"></span>#{project.name}<span class="block"></span></h2>
+        | <a class="btn-rounded" href="https://www.pivotaltracker.com/s/projects/#{project.id}">View in PT</a>
 
     p.instructions
         | Set data for a specific date:
