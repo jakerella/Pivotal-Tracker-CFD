@@ -1,6 +1,51 @@
+/*
+ * Web Fonts from fontspring.com
+ *
+ * All OpenType features and all extended glyphs have been removed.
+ * Fully installable fonts can be purchased at http://www.fontspring.com
+ *
+ * The fonts included in this stylesheet are subject to the End User License you purchased
+ * from Fontspring. The fonts are protected under domestic and international trademark and
+ * copyright law. You are prohibited from modifying, reverse engineering, duplicating, or
+ * distributing this font software.
+ *
+ * (c) 2010-2013 Fontspring
+ *
+ *
+ *
+ *
+ * The fonts included are copyrighted by the vendor listed below.
+ *
+ * Vendor:      Hoftype
+ * License URL: http://www.fontspring.com/fflicense/hoftype
+ *
+ *
+ */
+
+ @font-face {
+    font-family: 'CodeProDemoRegular';
+    src: url('../fonts/Code_Pro_Demo-webfont.eot');
+    src: url('../fonts/Code_Pro_Demo-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Code_Pro_Demo-webfont.woff') format('woff'),
+         url('../fonts/Code_Pro_Demo-webfont.ttf') format('truetype'),
+         url('../fonts/Code_Pro_Demo-webfont.svg#CodeProDemoRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SinanovaRegular';
+    src: url('../fonts/SinaNovaReg-webfont.eot');
+    src: url('../fonts/SinaNovaReg-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/SinaNovaReg-webfont.woff') format('woff'),
+         url('../fonts/SinaNovaReg-webfont.ttf') format('truetype'),
+         url('../fonts/SinaNovaReg-webfont.svg#sinanova-regularregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
 
 
-header { text-align: center; font-weight: bold; font-size: 1.2em; }
+/* ------------ */
 
 .loading { display: none; }
 
@@ -45,4 +90,283 @@ input[name=stats] { width: 30em; }
     padding: 2px;
     background-color: #fee;
     opacity: 0.80;
+}
+
+/* GLOBAL */
+
+* { text-align: center; }
+
+html {
+	background: url(../images/bg_body.jpg);
+}
+
+body,
+body.page_login {
+	width: 735px;
+	font: 13px/21px 'SinanovaRegular', 'georgia', serif;
+	color: #665449;
+	margin: 0 auto;
+	padding: 0;
+}
+
+h2 {
+	position: relative;
+	vertical-align: middle;
+	font: 20px 'CodeProDemoRegular', 'helvetica neue', helvetica, arial, sans-serif;
+	color: #b4501e;
+	text-shadow: 0 1px 0 #f1fcea;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	margin: 0 0 0px;
+
+	.block {
+		display: inline-block;
+		vertical-align: middle;
+		content: '';
+		width: 6px;
+		height: 6px;
+		background: #b4501e;
+		box-shadow: 0 1px 0 #f1fcea;
+		margin: -3px 15px 0;
+	}
+}
+
+a, a:link, a:visited {
+	color: #3b797b;
+}
+
+a:hover {
+	color: #265c5e;
+}
+
+a:active {
+	color: #133b3c;
+}
+
+input[type="text"], input[type="date"] {
+	width: 400px;
+	font: 15px 'georgia', serif;
+	color: #9c5911;
+	background: #fff;
+	padding: 15px 15px 14px;
+	box-shadow: inset 0 0 20px rgba(154, 154, 134, .4), 0 1px 1px rgba(0, 0, 0, .2);
+	border: none;
+	outline: none;
+}
+
+input[type="date"] {
+	padding: 13px 15px 11px;
+}
+
+
+header {
+	text-align: center;
+	font: 28px 'CodeProDemoRegular', 'helvetica neue', helvetica, arial, sans-serif;
+	color: #faf6da;
+	text-shadow: 0 2px 0 #9aa296;
+	text-transform: uppercase;
+	letter-spacing: 2px;
+	padding: 17px 0 15px;
+	border-bottom: 7px solid #d8ddcb;
+	box-shadow: 0 1px 0 #9ba296;
+	margin: 0 0 35px;
+}
+
+footer {
+	border-top: 7px solid #c5cfbf;
+	margin: 45px 0 0 0;
+	padding:  8px 0 6px;
+
+	p {
+		font-size: 11px;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+		color: #969786;
+		margin: 0;
+	}
+
+	a:link {
+		color: #969786;
+	}
+}
+
+ul {
+	list-style-type: none;
+}
+
+a.btn-large, input.btn-large {
+	width: 250px;
+	font: 14px 'CodeProDemoRegular', 'helvetica neue', helvetica, arial, sans-serif;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: #d3e2d2;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+	background: #4f8375;
+	box-shadow: inset 0 0 20px rgba(0, 0, 0, .3), 0 1px 1px rgba(0, 0, 0, .2);
+	margin-right: 8px;
+	padding: 11px 8px 9px;
+	outline: none;
+	border: none;
+
+	&:hover { background: #426d62; }
+	&:active { background: #315147; }
+}
+
+a.btn-rounded {
+	color: #faf6da;
+	font-size: 13px;
+	text-decoration: none;
+	border-radius: 15px;
+	background: #80a9aa url(../images/btn-arrow.png) no-repeat 94% 3px;
+	box-shadow: inset 0 0 20px rgba(0, 0, 0, .3), 0 1px 1px rgba(0, 0, 0, .2);
+	padding: 2px 28px 1px 10px;
+
+	&.left {
+		background: #80a9aa url(../images/btn-arrow-left.png) no-repeat 5px 3px;
+		padding: 5px 10px 4px 28px;
+	}
+
+	&:hover { background-color: #3b797b; }
+	&:active { background-color: #265e60; }
+}
+
+p.hint {
+	color: #918075;
+}
+
+
+/* LOGIN */
+
+#doLogin {
+	display: inline-block;
+	vertical-align: top;
+	width: 46px;
+	height: 46px;
+	text-indent: -9999px;
+	background: url(../images/login-sprite.png) no-repeat;
+	box-shadow: inset 0 0 20px rgba(154, 154, 134, .4);
+	margin-left: 10px;
+	outline: none;
+	border: none;
+
+	&:hover { background-position-y: -46px; }
+	&:active { background-position-y: -92px; }
+}
+
+
+.page_login {
+	.intro {
+		margin-bottom: 20px;
+	}
+
+	.hint {
+		margin-top: 20px;
+	}
+}
+
+
+/* PROJECTS */
+
+.projects-list {
+	margin-top: 20px;
+	padding: 0;
+
+	li {
+		margin: 0 0 15px;
+	}
+
+	a {
+		display: inline-block;
+		vertical-align: middle;
+		text-decoration: none;
+	}
+}
+
+
+/* PROJECT CHART PAGE */
+
+.page_project {
+	.btn-rounded {
+		padding: 5px 28px 4px 10px;
+	}
+}
+
+.projectLinks {
+	margin-bottom: 20px;
+
+	a {
+		margin: 0 3px;
+	}
+}
+
+#chart {
+	margin: 0 auto;
+	font: 12px 'CodeProDemoRegular', 'helvetica neue', helvetica, arial, sans-serif;
+}
+
+
+/* EDIT PROJECT */
+
+.page_edit {
+	.intro {
+		margin-bottom: 0;
+	}
+
+	.hint {
+		margin: 0;
+	}
+}
+
+.instructions {
+	margin: 0;
+}
+
+#update-stats {
+	width: 510px;
+	margin: 20px auto 0;
+
+	> div {
+		margin-bottom: 15px;
+		text-align: left;
+	}
+
+	.submit-group {
+		text-align: right;
+		margin-top: 20px;
+	}
+
+	input {
+		text-align: left;
+	}
+
+	input[type="date"] {
+		width: 200px;
+	}
+
+	input[type="submit"] {
+		width: auto;
+		padding: 11px 18px 9px;
+		margin-right: 0;
+	}
+
+	.cancel {
+		display: block;
+		text-align: right;
+		margin-top: 15px;
+	}
+
+	.hint {
+		text-align: left;
+		padding-left: 80px;
+	}
+}
+
+label {
+	display: inline-block;
+	width: 70px;
+	text-align: right;
+	font-family: 'CodeProDemoRegular', 'helvetica neue', helvetica, arial, sans-serif;
+	text-transform: uppercase;
+	font-weight: bold;
+	margin-right: 10px;
 }
