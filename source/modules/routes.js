@@ -355,7 +355,7 @@ doStatsUpdate = function(res, next, project, statsUpdate) {
     }
 
     statsUpdate.project = Number(statsUpdate.project);
-    if (!statsUpdate.project || statsUpdate.project !== project.id) {
+    if (!statsUpdate.project || Number(statsUpdate.project) !== Number(project.id)) {
         next(new e.BadRequestError("Sorry, but your stats update ID does not match your update URL!", 400));
         return;
     }
