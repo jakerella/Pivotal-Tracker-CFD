@@ -43,12 +43,14 @@ app.configure("production", function () {
 if (!process.env.PT_TOKEN || !process.env.PT_TOKEN.length) {
     throw new Error("No Pivotal Tracker token is set in the env var: \"PT_TOKEN\". This is required to process activity web hooks!");
 }
+console.log("Using server PT API token: " + process.env.PT_TOKEN);
 
 // Mongo DB connection info
 var mongoInfo = mongo.parseConnectionURI(process.env.MONGO_DB_URL);
 if (!mongoInfo) {
     throw new Error("Either no MongoDB connection URL was provided or it was invalid. Please place one in an environment variable (\"MONGO_DB_URL\") with the format: [protocol][username:password@]host[:port]/database");
 }
+console.log("Using Mongo URI: " + process.env.MONGO_DB_URL);
 
 
 // GETs
