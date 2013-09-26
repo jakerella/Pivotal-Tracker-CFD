@@ -55,6 +55,7 @@ console.log("Using Mongo URI: " + process.env.MONGO_DB_URL);
 
 // GETs
 app.get("/", routes.index);
+app.get("/dashboard", routes.hasToken, routes.showDashboard);
 app.get("/projects", routes.hasToken, routes.listProjects);
 app.get("/project/:id", routes.hasToken, routes.viewProject);
 app.get("/project/:id/edit", routes.hasToken, routes.editProject);

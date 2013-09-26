@@ -26,7 +26,6 @@ exports.index = function(req, res) {
         return;
     }
 
-    //res.render("index", { title: appName + " - Login", page: "login" });
     res.render("index", { title: appName, page: "login" });
 };
 
@@ -100,6 +99,10 @@ exports.listProjects = function(req, res, next) {
             return;
         });
     }
+};
+
+exports.showDashboard = function(req, res, next) {
+    res.render("dashboard", { title: appName, page: "dashboard" });
 };
 
 exports.viewProject = function(req, res, next) {
