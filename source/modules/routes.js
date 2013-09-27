@@ -271,8 +271,8 @@ exports.processActivityHook = function(req, res, next) {
         console.log("processing story update activity ID: "+activity.id+" on story ID: "+storyUpdate.id);
         data.processStoryUpdate(activity, storyUpdate, req, function(err) {
             if (err) {
-                console.error("ERROR processing story "+storyUpdate.id+": ", err.toString());
-                errors.push(err.toString());
+                console.error("ERROR processing story "+storyUpdate.id+": ", (err.message || err.desc), (err.code || err.status));
+                errors.push(err);
             }
             processCount++;
         });

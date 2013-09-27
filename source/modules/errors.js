@@ -41,5 +41,20 @@ module.exports = {
     HttpError: HttpError,
     BadRequestError: BadRequestError,
     AuthError: AuthError,
-    DatabaseError: DatabaseError
+    DatabaseError: DatabaseError,
+    
+    getErrorObject: function(err) {
+        var errObj,
+            code = (err.code || 0);
+
+        if (err instanceof Error) {
+            errObj = err;
+        } else  if (err.desc) {
+            errObj = new Error(err.desc, code);
+        } else {
+            errObj = new Error(err.toString(), code);
+        }
+
+        return err;
+    }
 };
