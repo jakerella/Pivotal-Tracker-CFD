@@ -66,7 +66,7 @@ module.exports = function(grunt) {
                 options: { nospawn: true }
             },
             serverjs: {
-                files: [ "source/modules/**/*.js" ],
+                files: [ "source/app.js", "source/modules/**/*.js" ],
                 tasks: [ "copy:serverjs" ],
                 options: { nospawn: true }
             },
