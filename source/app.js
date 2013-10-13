@@ -3,6 +3,7 @@ console.log("Starting pt-flow server");
 require("./modules/helpers.js"); // no return
 var express = require("express"),
     http = require("http"),
+    e = require("./modules/errors.js"),
     xmlParser = require("./modules/xml-parser.js"),
     routes = require("./modules/routes.js"),
     mongo = require("./modules/mongo-helper.js");
@@ -15,7 +16,6 @@ var app = express();
 // Config and middleware
 app.configure(function () {
     process.env.NODE_ENV = (process.env.NODE_ENV || "production");
-    app.testEnvs = ["dev", "development", "test", "testing", "qa"];
 
     app.set("port", process.env.PORT || 5000);
     app.set("views", __dirname + "/views");
@@ -26,17 +26,12 @@ app.configure(function () {
     app.use(express.methodOverride());
     app.use(express.cookieParser("huADnaQnwJXbh3A49VFA"));
     app.use(express.session());
-    app.use(app.router);
     app.use(express.static(__dirname + "/public"));
+    app.use(app.router);
 });
 
 // Error handling
-app.configure("dev", function () {
-    app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-app.configure("production", function () {
-    app.use(express.errorHandler());
-});
+app.use(e.handleAppError);
 
 
 // Pivotal Tracker API token
@@ -53,12 +48,14 @@ if (!mongoInfo) {
 console.log("Using Mongo URI: " + process.env.MONGO_DB_URL);
 
 
+// ROUTING
+
 // GETs
 app.get("/", routes.index);
 app.get("/projects", routes.hasToken, routes.listProjects);
 app.get("/project/:id", routes.hasToken, routes.viewProject);
 app.get("/project/:id/edit", routes.hasToken, routes.editProject);
-if (app.testEnvs.indexOf(process.env.NODE_ENV) > -1) {
+if (process.env.NODE_ENV === "development") {
     //pivotal.debug = true;
     app.get("/test-hook", routes.showHookText);
 }
@@ -69,6 +66,13 @@ app.post("/projects", routes.getProjects);
 app.post("/project/:id/stats/edit", routes.hasToken, routes.updateStats);
 app.post("/activity-hook", routes.processActivityHook);
 
+// 404 page
+app.get("*", function(req, res, next) {
+    e.handleAppError(new e.HttpError("Sorry, but I couldn't find this page!", 404), req, res, next);
+});
+
+
+// Start up the server
 
 http.createServer(app).listen(app.get("port"), function () {
     console.log("pt-cfd server listening on port " + app.get("port"));

@@ -1,0 +1,18 @@
+extend layout
+
+block content
+    h2.page-title
+        | Uh oh...
+
+    p.intro
+        | Sorry, but it looks like there was an error!
+
+    p.error
+        | #{error.message}
+
+    if printStack
+        h3.stackTitle Error Stack Trace
+        p.errorStack
+            - var stackLines = error.stack.replace(/\n/g, "<br />");
+            != stackLines
+            
