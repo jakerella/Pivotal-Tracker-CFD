@@ -68,7 +68,8 @@ app.post("/activity-hook", routes.processActivityHook);
 
 // 404 page
 app.get("*", function(req, res, next) {
-    e.handleAppError(new e.HttpError("Sorry, but I couldn't find this page!", 404), req, res, next);
+    if (/\.(css|js|map|ico|png|jpg|gif|bmp|tif)$/.test(req.url)) { next(); return; }
+    e.handleAppError(new e.HttpError("Sorry, but I couldn't find this page! (" + req.url + ")", 404), req, res, next);
 });
 
 
