@@ -52,7 +52,7 @@ You can run the Pivotal Tracker CFD app from just about any server. Here are the
 
 1. [Install git](http://git-scm.com)
 2. [Install Node](http://nodejs.org)
-2. [Install Grunt CLI](http://gruntjs.com) (`npm install -g grint-cli`)
+2. [Install Grunt CLI](http://gruntjs.com) (`npm install -g grunt-cli`)
 3. Clone the app: `git clone git@github.com:a2labs/Pivotal-Tracker-CFD.git`
 4. Navigate to the app directory (`cd Pivotal-Tracker-CFD`) and run `npm install` to install all dependencies
 5. Set up your database:
